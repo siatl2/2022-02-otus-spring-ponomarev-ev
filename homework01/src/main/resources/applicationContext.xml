@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="fileQuestion" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg value="/home/siatl/dev/2022-02-otus-spring-ponomarev-ev/homework01/src/main/resources/questions.csv"/>
+        <!-- comment: class FileSystemResource don't understand short file path. When i used short file path, i got FileNotFound exception -->
+    </bean>
+    <bean id="reader" class="ru.otus.homework01.service.ReaderFile">
+        <constructor-arg ref="fileQuestion"/>
+    </bean>
+    <bean id="parser" class="ru.otus.homework01.service.ParserList">
+        <constructor-arg ref="reader"/>
+    </bean>
+    <bean id="printer" class="ru.otus.homework01.service.Printer">
+        <constructor-arg ref="parser"/>
+    </bean>
+</beans>
