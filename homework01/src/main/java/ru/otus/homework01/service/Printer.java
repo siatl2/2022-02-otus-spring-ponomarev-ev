@@ -1,18 +1,35 @@
 package ru.otus.homework01.service;
 
+import ru.otus.homework01.dao.QuestionDao;
 import ru.otus.homework01.domain.Answer;
 import ru.otus.homework01.domain.Question;
 
+import java.io.PrintStream;
 import java.util.List;
 
 public class Printer {
-    private Parser parser;
-    public Printer(Parser parser){
-        this.parser = parser;
+    private final QuestionDao questionDao;
+    private final PrintStream printStream;
+
+    public Printer(QuestionDao questionDao, PrintStream printStream){
+        this.questionDao = questionDao;
+        this.printStream = printStream;
+    }
+
+    private void initPrintStream(){
+        if (printStream != null){
+            System.setOut(printStream);
+        }
+    }
+
+    private void restorePrintStream(){
+        if (printStream != null){
+            System.setOut(System.out);
+        }
     }
 
     public void print(){
-        List<Question> listQuestion = parser.getQuestions();
+        List<Question> listQuestion = questionDao.getQuestions();
 
         System.out.println("Print questions:");
         System.out.println("=================");

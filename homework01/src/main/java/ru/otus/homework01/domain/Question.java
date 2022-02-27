@@ -3,14 +3,11 @@ package ru.otus.homework01.domain;
 import java.util.List;
 
 public class Question {
-    private List<Answer> listAnswer;
-    private String name;
+    private final List<Answer> listAnswer;
+    private final String name;
 
-    public Question(String name){
+    public Question(final String name, final List<Answer> listAnswer){
         this.name = name;
-    }
-
-    public void setListAnswer(List<Answer> listAnswer) {
         this.listAnswer = listAnswer;
     }
 

@@ -1,9 +1,9 @@
-package ru.otus.homework01.service;
+package ru.otus.homework01.dao;
 
 import ru.otus.homework01.domain.Question;
 
 import java.util.List;
 
-public interface Parser {
+public interface QuestionDao {
     List<Question> getQuestions();
 }
