@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="fileReader" class="ru.otus.homework01.service.ResourceFileReader"/>
+    <bean id="questionDao" class="ru.otus.homework01.dao.QuestionDaoCsv">
+        <constructor-arg ref="fileReader"/>
+    </bean>
+    <bean id="printer" class="ru.otus.homework01.service.Printer"
+          init-method="initPrintStream"
+          destroy-method="restorePrintStream">
+        <constructor-arg ref="questionDao"/>
+        <constructor-arg><null/></constructor-arg>
+    </bean>
+</beans>
