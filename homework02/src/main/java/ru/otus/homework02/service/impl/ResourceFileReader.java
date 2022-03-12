@@ -14,8 +14,11 @@ import java.util.List;
 
 @Service
 public class ResourceFileReader implements FileReader {
-    @Value("${questions.file_name}")
-    private String fileQuestions;
+    private final String fileQuestions;
+
+    public ResourceFileReader(@Value("${questions.file_name}") String fileQuestions) {
+        this.fileQuestions = fileQuestions;
+    }
 
     @Override
     public List<String> getContentFile(){
