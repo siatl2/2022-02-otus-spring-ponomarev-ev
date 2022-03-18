@@ -1,9 +1,9 @@
 package ru.otus.homework02.domain;
 
 public class Answer {
-    private String name;
+    private final String name;
 
-    public Answer(String name){
+    public Answer(final String name){
         this.name = name;
     }
 

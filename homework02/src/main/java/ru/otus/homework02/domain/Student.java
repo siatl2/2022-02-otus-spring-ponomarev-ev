@@ -4,7 +4,7 @@ public class Student {
     private final String family;
     private final String name;
 
-    public Student(String family, String name) {
+    public Student(final String family, final String name) {
         this.family = family;
         this.name = name;
     }

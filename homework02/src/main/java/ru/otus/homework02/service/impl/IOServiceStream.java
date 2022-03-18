@@ -13,32 +13,28 @@ import java.util.Scanner;
 @Service
 public class IOServiceStream implements IOService {
     private final PrintStream printStream;
-    private final InputStream inputStream;
-
-    Scanner reader;
+    private final Scanner reader;
 
     @Autowired
-    public IOServiceStream(OutputDevice outputDevice, InputDevice inputDevice) {
+    public IOServiceStream(final OutputDevice outputDevice, final InputDevice inputDevice) {
         this.printStream = outputDevice.getPrintStream();
-        this.inputStream = inputDevice.getInputStream();
-
+        InputStream inputStream = inputDevice.getInputStream();
         reader = new Scanner(inputStream);
     }
 
     @Override
-    public void outputString(String output) {
+    public void outputString(final String output) {
         printStream.print(output);
     }
 
     @Override
-    public void newLine() {
+    public void outputEmptyLine() {
         printStream.println();
     }
 
     @Override
-    public String inputStringWithPrompt(String prompt) {
+    public String inputStringWithPrompt(final String prompt) {
         printStream.print(prompt);
-        String enterValue = reader.next();
-        return enterValue;
+        return reader.next();
     }
 }
