@@ -18,19 +18,20 @@ public class QuestionDaoCsv implements QuestionDao {
     }
 
     @Override
-    public List<Question> getQuestions(String[] correctAnswers){
+    public List<Question> getQuestions(){
         List<String> strings = fileReader.getContentFile();
         List<Question> questions = new ArrayList<>();
 
-        for (int i = 0; i < strings.size(); i++) {
-            String[] column = strings.get(i).split(",");
+        for (String line : strings){
+            String[] column = line.split(",");
             if (column.length > 0){
                 String name = column[0];
+                String correctAnswer = column[1];
                 List<Answer> answers = new ArrayList<>();
-                for (int j = 1; j < column.length; j++) {
+                for (int j = 2; j < column.length; j++) {
                     answers.add(new Answer(column[j]));
                 }
-                Question question = new Question(name, answers, correctAnswers[i]);
+                Question question = new Question(name, answers, correctAnswer);
                 questions.add(question);
             }
         }

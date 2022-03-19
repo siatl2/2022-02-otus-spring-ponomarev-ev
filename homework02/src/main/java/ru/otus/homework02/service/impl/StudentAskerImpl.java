@@ -2,6 +2,7 @@ package ru.otus.homework02.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.otus.homework02.domain.Student;
 import ru.otus.homework02.service.IOService;
 import ru.otus.homework02.service.StudentAsker;
 
@@ -15,12 +16,10 @@ public class StudentAskerImpl implements StudentAsker {
     }
 
     @Override
-    public String askFamily() {
-        return ioService.inputStringWithPrompt("Enter your family: ");
-    }
+    public Student askStudentInfo() {
+        String family = ioService.inputStringWithPrompt("Enter your family: ");
+        String name = ioService.inputStringWithPrompt("Enter your name: ");
 
-    @Override
-    public String askName() {
-        return ioService.inputStringWithPrompt("Enter your name: ");
+        return new Student(family, name);
     }
 }

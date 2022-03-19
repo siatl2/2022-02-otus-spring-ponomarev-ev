@@ -1,7 +1,7 @@
 package ru.otus.homework02.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.otus.homework02.exception.ReadCsvFileException;
 import ru.otus.homework02.service.FileReader;
 
@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Component
 public class ResourceFileReader implements FileReader {
     private final String fileQuestions;
 
