@@ -1,0 +1,5 @@
+questions:
+  file_name_en: questions_en.csv
+  file_name_ru: questions_ru.csv
+  minimum_questions_correct_answer: 2
+  language: ru
