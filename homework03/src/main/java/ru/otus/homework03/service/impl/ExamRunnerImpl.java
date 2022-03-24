@@ -1,12 +1,12 @@
 package ru.otus.homework03.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Service;
 import ru.otus.homework03.dao.QuestionDao;
 import ru.otus.homework03.domain.*;
 import ru.otus.homework03.service.*;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -32,8 +32,7 @@ public class ExamRunnerImpl implements ExamRunner {
     }
 
     @Override
-    @PostConstruct
-    public void run() {
+    public void run(ApplicationArguments args) throws Exception {
         Student student = studentAsker.askStudentInfo();
         List<Question> questions = questionDao.getQuestions();
         List<AnswerUserOnQuestion> answerUserOnQuestions = questionsAsker.askQuestions(questions);

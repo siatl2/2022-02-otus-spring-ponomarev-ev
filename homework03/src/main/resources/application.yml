@@ -1,5 +1,5 @@
 questions:
-  file_name_en: questions_en.csv
-  file_name_ru: questions_ru.csv
+  template_file_name: questions_[language].csv
   minimum_questions_correct_answer: 2
   language: ru
+  available_languages: en,ru

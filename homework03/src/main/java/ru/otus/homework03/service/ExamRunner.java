@@ -1,5 +1,7 @@
 package ru.otus.homework03.service;
 
-public interface ExamRunner {
-    void run();
+import org.springframework.boot.ApplicationRunner;
+
+public interface ExamRunner extends ApplicationRunner {
+
 }
