@@ -9,13 +9,9 @@ import org.springframework.context.annotation.Import;
 import ru.otus.homework04.bean.IOServiceTestBean;
 import ru.otus.homework04.service.AnswerAsker;
 
-@SpringBootTest
+@SpringBootTest(classes = {AnswerAskerImpl.class,IOServiceTestBean.class})
 class AnswerAskerImplTest {
     private static final String TEST_INPUT = "Vasya";
-
-    @Configuration
-    @Import({AnswerAskerImpl.class,IOServiceTestBean.class})
-    static class TestConging{ }
 
     private final AnswerAsker answerAsker;
     private final IOServiceTestBean ioServiceTestBean;

@@ -2,12 +2,11 @@ package ru.otus.homework04.dao.impl;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.homework04.dao.QuestionDao;
 import ru.otus.homework04.domain.Answer;
 import ru.otus.homework04.domain.Question;
@@ -19,34 +18,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = {QuestionDaoCsv.class})
 class QuestionDaoCsvTest {
     private static final List<String> CONTENT_FILE = Arrays.asList(new String[]{"Question1,1,Answer1-1,Answer1-2", "Question2,otvet"});
-    @Configuration
-    @Import(QuestionDaoCsv.class)
-    static class TestConfig{
-        @Bean
-        public FileReader fileReader(){
-            return new FileReader() {
-                @Override
-                public List<String> getContentFile() {
-                    return CONTENT_FILE;
-                }
-            };
-        }
-    }
 
-    private final FileReader fileReader;
     private final QuestionDao questionDao;
 
+    @MockBean
+    private FileReader fileReader;
+
     @Autowired
-    public QuestionDaoCsvTest(FileReader fileReader, QuestionDao questionDao) {
-        this.fileReader = fileReader;
+    public QuestionDaoCsvTest(QuestionDao questionDao) {
         this.questionDao = questionDao;
     }
 
     @Test
     void getQuestions() {
+        when(fileReader.getContentFile()).thenReturn(CONTENT_FILE);
         List<Question> expectedQuestions = new ArrayList<>();
         List<Answer> answers = new ArrayList<>();
         answers.add(new Answer("Answer1-1", true));

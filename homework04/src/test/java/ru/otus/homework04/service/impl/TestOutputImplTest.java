@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {TestOutputImpl.class, IOServiceTestBean.class, MessageOutputTestBean.class})
 class TestOutputImplTest {
     public static final String OUPUT_STUDENT = "\n" +
             "===========================\n" +
@@ -28,10 +28,6 @@ class TestOutputImplTest {
             "Minimum Score: %2\n" +
             "===========================\n" +
             "Result: %3\n";
-
-    @Configuration
-    @Import({TestOutputImpl.class, IOServiceTestBean.class, MessageOutputTestBean.class})
-    static class TestConfig{ }
 
     private final TestOutput testOutput;
     private final IOServiceTestBean ioServiceTestBean;

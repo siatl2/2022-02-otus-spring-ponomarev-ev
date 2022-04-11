@@ -18,7 +18,7 @@ import ru.otus.homework04.service.QuestionOutput;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = {QuestionOutputImpl.class, IOServiceTestBean.class, MessageOutputTestBean.class})
 class QuestionOutputImplTest {
     private static final int NUMBER_QUESTION = 0;
     private static final String EXPECTED_TEXT_FREE_ANSWER = "" +
@@ -33,9 +33,6 @@ class QuestionOutputImplTest {
             "2 - Answer1-2\n" +
             "Enter number answer=";
 
-    @Configuration
-    @Import({QuestionOutputImpl.class, IOServiceTestBean.class, MessageOutputTestBean.class})
-    static class TestConfig{ }
     private final QuestionOutput questionOutput;
     private final IOServiceTestBean ioServiceTestBean;
 

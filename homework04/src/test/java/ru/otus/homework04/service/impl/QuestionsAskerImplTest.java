@@ -21,15 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
-@SpringBootTest
+@SpringBootTest(classes = {QuestionsAskerImpl.class})
 @ExtendWith(MockitoExtension.class)
 class QuestionsAskerImplTest {
 
-    @Configuration
-    @Import({QuestionsAskerImpl.class})
-    static class TestConfig {
-
-    }
     @MockBean
     public QuestionOutput questionOutput;
 

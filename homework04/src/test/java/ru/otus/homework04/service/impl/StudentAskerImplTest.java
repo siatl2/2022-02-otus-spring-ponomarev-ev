@@ -12,7 +12,7 @@ import ru.otus.homework04.service.StudentAsker;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {StudentAskerImpl.class, IOServiceTestBean.class, MessageOutputTestBean.class})
 class StudentAskerImplTest {
     private static final String FAMILY = "Ivanov";
     private static final String NAME = "Vasya";
@@ -20,10 +20,6 @@ class StudentAskerImplTest {
     private static final String OUTPUT_TEXT = "" +
             "Enter your family: " + FAMILY + "\n" +
             "Enter your name: " + NAME + "\n";
-
-    @Configuration
-    @Import({StudentAskerImpl.class, IOServiceTestBean.class, MessageOutputTestBean.class})
-    static class TestConfig{ }
 
     private final StudentAsker studentAsker;
     private final IOServiceTestBean ioServiceTestBean;

@@ -16,13 +16,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {TestCalculatorImpl.class})
 class TestCalculatorImplTest {
-
-    @Configuration
-    @Import({TestCalculatorImpl.class})
-    static class TestConfig{ }
-
     private final TestCalculator testCalculator;
 
     @Autowired

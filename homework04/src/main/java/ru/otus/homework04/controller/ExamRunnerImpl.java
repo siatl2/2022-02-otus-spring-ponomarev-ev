@@ -1,10 +1,11 @@
-package ru.otus.homework04.service.impl;
+package ru.otus.homework04.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
+import org.springframework.shell.standard.ShellOption;
 import org.springframework.stereotype.Service;
 import ru.otus.homework04.dao.QuestionDao;
 import ru.otus.homework04.domain.*;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Service
 @ShellComponent
-public class ExamRunnerImpl implements ExamRunner {
+public class ExamRunnerImpl{
     private final TestOutput testOutput;
     private final StudentAsker studentAsker;
     private final QuestionDao questionDao;
@@ -37,15 +38,13 @@ public class ExamRunnerImpl implements ExamRunner {
         this.testOutput = testOutput;
     }
 
-    @Override
     @ShellMethod("Take a test")
-    public void takeTest(){
-        student = studentAsker.askStudentInfo();
+    public void takeTest(@ShellOption String family, @ShellOption String name){
+        student = new Student(family, name);
         List<Question> questions = questionDao.getQuestions();
         answerUserOnQuestions = questionsAsker.askQuestions(questions);
     }
 
-    @Override
     @ShellMethod("Display results")
     @ShellMethodAvailability("displayResultAvailability")
     public void displayResult(){
