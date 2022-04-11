@@ -1,0 +1,23 @@
+
+
+
+YYYYYYY       YYYYYYY                                    iiii  kkkkkkkk
+Y:::::Y       Y:::::Y                                   i::::i k::::::k
+Y:::::Y       Y:::::Y                                    iiii  k::::::k
+Y::::::Y     Y::::::Y                                          k::::::k
+YYY:::::Y   Y:::::YYYaaaaaaaaaaaaa  rrrrr   rrrrrrrrr  iiiiiii  k:::::k    kkkkkkk
+   Y:::::Y Y:::::Y   a::::::::::::a r::::rrr:::::::::r i:::::i  k:::::k   k:::::k
+    Y:::::Y:::::Y    aaaaaaaaa:::::ar:::::::::::::::::r i::::i  k:::::k  k:::::k
+     Y:::::::::Y              a::::arr::::::rrrrr::::::ri::::i  k:::::k k:::::k
+      Y:::::::Y        aaaaaaa:::::a r:::::r     r:::::ri::::i  k::::::k:::::k
+       Y:::::Y       aa::::::::::::a r:::::r     rrrrrrri::::i  k:::::::::::k
+       Y:::::Y      a::::aaaa::::::a r:::::r            i::::i  k:::::::::::k
+       Y:::::Y     a::::a    a:::::a r:::::r            i::::i  k::::::k:::::k
+       Y:::::Y     a::::a    a:::::a r:::::r           i::::::ik::::::k k:::::k
+    YYYY:::::YYYY  a:::::aaaa::::::a r:::::r           i::::::ik::::::k  k:::::k
+    Y:::::::::::Y   a::::::::::aa:::ar:::::r           i::::::ik::::::k   k:::::k
+    YYYYYYYYYYYYY    aaaaaaaaaa  aaaarrrrrrr           iiiiiiiikkkkkkkk    kkkkkkk
+
+
+
+
