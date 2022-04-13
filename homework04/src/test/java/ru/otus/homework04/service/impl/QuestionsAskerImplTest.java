@@ -7,8 +7,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import ru.otus.homework04.domain.*;
 import ru.otus.homework04.service.AnswerAsker;
 import ru.otus.homework04.service.QuestionOutput;

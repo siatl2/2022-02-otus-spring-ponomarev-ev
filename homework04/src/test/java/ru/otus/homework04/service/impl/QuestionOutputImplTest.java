@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import ru.otus.homework04.bean.IOServiceTestBean;
 import ru.otus.homework04.bean.MessageOutputTestBean;
 import ru.otus.homework04.domain.Answer;
