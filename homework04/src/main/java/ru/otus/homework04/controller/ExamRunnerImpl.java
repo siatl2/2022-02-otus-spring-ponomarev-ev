@@ -6,18 +6,17 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 import ru.otus.homework04.dao.QuestionDao;
 import ru.otus.homework04.domain.*;
 import ru.otus.homework04.service.*;
 
 import java.util.List;
 
-@Service
+@Controller
 @ShellComponent
 public class ExamRunnerImpl{
     private final TestOutput testOutput;
-    private final StudentAsker studentAsker;
     private final QuestionDao questionDao;
     private final QuestionsAsker questionsAsker;
     private final TestCalculator testCalculator;
@@ -26,12 +25,10 @@ public class ExamRunnerImpl{
 
     @Autowired
     public ExamRunnerImpl(
-            final StudentAsker studentAsker
-            , final QuestionDao questionDao
+            final QuestionDao questionDao
             , final QuestionsAsker questionsAsker
             , final TestCalculator testCalculator
             , final TestOutput testOutput) {
-        this.studentAsker = studentAsker;
         this.questionDao = questionDao;
         this.questionsAsker = questionsAsker;
         this.testCalculator = testCalculator;
