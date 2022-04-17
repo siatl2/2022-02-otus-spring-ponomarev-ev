@@ -1,7 +1,6 @@
 package ru.otus.homework05.dao.impl;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,8 +14,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @JdbcTest
 @Import(GenreDaoJdbc.class)
@@ -36,9 +33,12 @@ public class GenreDaoJdbcTest {
 
     @Test
     void insertByName() {
-        String expectedValue = "Vasya-authur";
-        long id = genreDao.insertByName(expectedValue);
-        Genre genre = genreDao.getById(id);
+        String expectedValue = "new Genre";
+        Genre genre = new Genre(expectedValue);
+        genreDao.insert(genre);
+        long id = genre.getId();
+
+        genre = genreDao.getById(id);
         String actualValue = genre.getName();
         assertEquals(expectedValue, actualValue);
     }
@@ -77,10 +77,11 @@ public class GenreDaoJdbcTest {
     @Test
     void delete() {
         String name = "Something literature";
-        long id = genreDao.insertByName(name);
-        Genre genre = new Genre(id, name);
+        Genre genre = new Genre(name);
+        genreDao.insert(genre);
+        long id= genre.getId();
 
-        genreDao.delete(genre);
+        genreDao.deleteById(id);
 
         boolean expectedValue = false;
         boolean actualValue = genreDao.existById(id);
@@ -89,9 +90,7 @@ public class GenreDaoJdbcTest {
 
     @Test
     void delete_exeptionDeleteGenry() {
-        Genre genre = new Genre(EXISTING_ID, EXISTING_VALUE);
-
-        assertThrows(LibraryException.class, () -> genreDao.delete(genre));
+        assertThrows(LibraryException.class, () -> genreDao.deleteById(EXISTING_ID));
     }    
     
 }

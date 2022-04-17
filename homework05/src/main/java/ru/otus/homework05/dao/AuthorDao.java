@@ -5,10 +5,10 @@ import ru.otus.homework05.domain.Author;
 import java.util.List;
 
 public interface AuthorDao {
-    long insertByName(String name);
+    void insert(Author author);
     List<Author> getAll();
     Author getById(long id);
     boolean existById(long id);
-    void update(Author newAuthor);
-    void delete(Author author);
+    void update(Author author);
+    void deleteById(long id);
 }

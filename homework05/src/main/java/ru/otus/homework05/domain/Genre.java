@@ -1,12 +1,22 @@
 package ru.otus.homework05.domain;
 
 public class Genre {
-    private final long id;
+    private static final long ID_NOT_FROM_DATABASE = -1L;
+    private long id;
     private final String name;
 
     public Genre(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Genre(String name) {
+        this.id = ID_NOT_FROM_DATABASE;
+        this.name = name;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public long getId() {

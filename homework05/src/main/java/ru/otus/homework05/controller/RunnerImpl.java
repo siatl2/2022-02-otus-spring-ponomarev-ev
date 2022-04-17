@@ -52,7 +52,10 @@ public class RunnerImpl {
             , @ShellOption long authorId
             , @ShellOption long genreId
             ) {
-        bookDao.insertByNameAuthorIdGenreId(name, authorId, genreId);
+        Author author = authorDao.getById(authorId);
+        Genre genre = genreDao.getById(genreId);
+        Book book = new Book(name, author, genre);
+        bookDao.insert(book);
     }
 
     @ShellMethod("Read all books")
@@ -70,26 +73,26 @@ public class RunnerImpl {
     @ShellMethod("Update book")
     public void updateBook(
             @ShellOption long id
-            , @ShellOption String newName
+            , @ShellOption String name
             , @ShellOption long authorId
             , @ShellOption long genreId
             ) {
-        Author newAuthor = authorDao.getById(authorId);
-        Genre newGenre = genreDao.getById(genreId);
+        Author author = authorDao.getById(authorId);
+        Genre genre = genreDao.getById(genreId);
 
-        Book newBook = new Book(id, newName, newAuthor, newGenre);
-        bookDao.update(newBook);
+        Book book = new Book(id, name, author, genre);
+        bookDao.update(book);
     }
 
     @ShellMethod("Delete book")
     public void deleteBook(@ShellOption long id) {
-        Book book = bookDao.getById(id);
-        bookDao.delete(book);
+        bookDao.deleteById(id);
     }
 
     @ShellMethod("Create new author")
     public void createAuthor(@ShellOption String name) {
-        authorDao.insertByName(name);
+        Author author = new Author(name);
+        authorDao.insert(author);
     }
 
     @ShellMethod("Read all authors")
@@ -105,20 +108,20 @@ public class RunnerImpl {
     }
 
     @ShellMethod("Update author")
-    public void updateAuthor(@ShellOption long id, @ShellOption String newName) {
-        Author newAuthor = new Author(id, newName);
-        authorDao.update(newAuthor);
+    public void updateAuthor(@ShellOption long id, @ShellOption String name) {
+        Author author = new Author(id, name);
+        authorDao.update(author);
     }
 
     @ShellMethod("Delete author")
     public void deleteAuthor(@ShellOption long id) {
-        Author author = authorDao.getById(id);
-        authorDao.delete(author);
+        authorDao.deleteById(id);
     }
 
     @ShellMethod("Create new genre")
     public void createGenre(@ShellOption String name) {
-        genreDao.insertByName(name);
+        Genre genre = new Genre(name);
+        genreDao.insert(genre);
     }
 
     @ShellMethod("Read all genries")
@@ -134,14 +137,13 @@ public class RunnerImpl {
     }
 
     @ShellMethod("Update genre")
-    public void updateGenre(@ShellOption long id, @ShellOption String newName) {
-        Genre newGenre = new Genre(id, newName);
-        genreDao.update(newGenre);
+    public void updateGenre(@ShellOption long id, @ShellOption String name) {
+        Genre genre = new Genre(id, name);
+        genreDao.update(genre);
     }
 
     @ShellMethod("Delete genre")
     public void deleteGenre(@ShellOption long id) {
-        Genre genre = genreDao.getById(id);
-        genreDao.delete(genre);
+        genreDao.deleteById(id);
     }
 }

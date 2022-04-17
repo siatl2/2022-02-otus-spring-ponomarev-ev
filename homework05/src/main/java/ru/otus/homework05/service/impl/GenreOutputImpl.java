@@ -3,7 +3,6 @@ package ru.otus.homework05.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.otus.homework05.component.IOService;
-import ru.otus.homework05.domain.Author;
 import ru.otus.homework05.domain.Genre;
 import ru.otus.homework05.service.GenreOutput;
 

@@ -1,16 +1,11 @@
 package ru.otus.homework05.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import ru.otus.homework05.dao.AuthorDao;
-import ru.otus.homework05.dao.BookDao;
 import ru.otus.homework05.domain.Author;
 import ru.otus.homework05.exception.LibraryException;
 
@@ -30,10 +25,14 @@ class AuthorDaoJdbcTest {
     }
 
     @Test
-    void insertByName() {
+    void insert() {
         String expectedValue = "Vasya-authur";
-        long id = authorDao.insertByName(expectedValue);
-        Author author = authorDao.getById(id);
+        Author author = new Author(expectedValue);
+        authorDao.insert(author);
+        long id = author.getId();
+
+        System.out.println("2.id=" + id);
+        author = authorDao.getById(id);
         String actualValue = author.getName();
         assertEquals(expectedValue, actualValue);
     }
@@ -72,10 +71,11 @@ class AuthorDaoJdbcTest {
     @Test
     void delete() {
         String name = "Vasya-authur";
-        long id = authorDao.insertByName(name);
-        Author author = new Author(id, name);
+        Author author = new Author(name);
+        authorDao.insert(author);
+        long id = author.getId();
 
-        authorDao.delete(author);
+        authorDao.deleteById(id);
         
         boolean expectedValue = false;
         boolean actualValue = authorDao.existById(id);
@@ -84,8 +84,6 @@ class AuthorDaoJdbcTest {
 
     @Test
     void delete_exeptionDeleteAuthor() {
-        Author author = new Author(EXISTING_ID, EXISTING_VALUE);
-
-        assertThrows(LibraryException.class, () -> authorDao.delete(author));
+        assertThrows(LibraryException.class, () -> authorDao.deleteById(EXISTING_ID));
     }
 }

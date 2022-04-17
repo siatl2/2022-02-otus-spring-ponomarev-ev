@@ -54,14 +54,15 @@ class BookDaoJdbcTest {
         String name = "New Original book";
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
-        long id = bookDao.insertByNameAuthorIdGenreId(name, SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_GENRE_ID);
-        Book expectedvalue = new Book(id, name,author, genre);
+        Book expectedValue = new Book(name,author, genre);
+        bookDao.insert(expectedValue);
+        long id = expectedValue.getId();
 
         when(authorDao.getById(anyLong())).thenReturn(author);
         when(genreDao.getById(anyLong())).thenReturn(genre);
 
         Book actualValue = bookDao.getById(id);
-        assertEquals(expectedvalue, actualValue);
+        assertEquals(expectedValue, actualValue);
     }
 
     @Test
@@ -72,9 +73,10 @@ class BookDaoJdbcTest {
         String name = "New Original book";
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
+        Book book = new Book(name, author, genre);
 
         assertThrows(LibraryException.class
-                , () -> bookDao.insertByNameAuthorIdGenreId(name, SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_GENRE_ID));
+                , () -> bookDao.insert(book));
     }
 
     @Test
@@ -85,9 +87,10 @@ class BookDaoJdbcTest {
         String name = "New Original book";
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
+        Book book = new Book(name, author, genre);
 
         assertThrows(LibraryException.class
-                , () -> bookDao.insertByNameAuthorIdGenreId(name, SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_GENRE_ID));
+                , () -> bookDao.insert(book));
     }
 
     @Test
@@ -136,11 +139,7 @@ class BookDaoJdbcTest {
 
     @Test
     void delete() {
-        Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
-        Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
-        Book book = new Book(SOME_EXISTING_ID, SOME_EXISTING_NAME, author, genre);
-
-        bookDao.delete(book);
+        bookDao.deleteById(SOME_EXISTING_ID);
 
         boolean expectedValue = false;
         boolean actualValue = bookDao.existById(SOME_EXISTING_ID);

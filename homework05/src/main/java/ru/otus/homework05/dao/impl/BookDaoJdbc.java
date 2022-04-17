@@ -36,7 +36,11 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public long insertByNameAuthorIdGenreId(String name, long authorId, long genreId) {
+    public void insert(Book book) {
+        long authorId = book.getAuthor().getId();
+        long genreId = book.getGenre().getId();
+        String name = book.getName();
+
         if (!authorDao.existById(authorId)){
             throw new LibraryException("Author not exist", new RuntimeException());
         }
@@ -51,19 +55,42 @@ public class BookDaoJdbc implements BookDao {
         params.addValue("genre_id", genreId);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcOperations.update("insert into book(name, author_id, genre_id) values(:name, :author_id, :genre_id)", params, keyHolder);
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        book.setId(id);
     }
 
     @Override
     public List<Book> getAll() {
-        return namedParameterJdbcOperations.query("select * from book", new BookDaoJdbc.BookMapper());
+        String query = "select " +
+                            " book.id id " +
+                            ", book.name name " +
+                            ", author_id " +
+                            ", author.name author_name " +
+                            ", genre_id " +
+                            ", genre.name genre_name " +
+                        " from " +
+                            " book inner join author on book.author_id = author.id " +
+                            " inner join genre on book.genre_id = genre.id";
+        return namedParameterJdbcOperations.query(query, new BookDaoJdbc.BookMapper());
     }
 
     @Override
     public Book getById(long id) {
+        String query = "select " +
+                    " book.id id " +
+                    ", book.name name " +
+                    ", author_id " +
+                    ", author.name author_name " +
+                    ", genre_id " +
+                    ", genre.name genre_name " +
+                " from " +
+                    " book inner join author on book.author_id = author.id " +
+                    " inner join genre on book.genre_id = genre.id" +
+                " where " +
+                    " book.id=:id";
         Map<String, Object> params = Collections.singletonMap("id", id);
         return namedParameterJdbcOperations.queryForObject(
-                "select * from book where id=:id"
+                query
                 ,params
                 , new BookDaoJdbc.BookMapper()
         );
@@ -73,7 +100,7 @@ public class BookDaoJdbc implements BookDao {
     public boolean existById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         Integer returnCount = namedParameterJdbcOperations.queryForObject(
-                "select count(*) from book where id=:id"
+                "select count(id) from book where id=:id"
                 ,params
                 , Integer.class
         );
@@ -81,11 +108,11 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void update(Book newBook) {
-        long id = newBook.getId();
-        String name = newBook.getName();
-        long authorId = newBook.getAuthor().getId();
-        long genreId = newBook.getGenre().getId();
+    public void update(Book book) {
+        long id = book.getId();
+        String name = book.getName();
+        long authorId = book.getAuthor().getId();
+        long genreId = book.getGenre().getId();
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
@@ -104,11 +131,11 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void delete(Book book) {
-        if (!existById(book.getId())){
-            throw new LibraryException("Cant't delete book. Id not exists/", new RuntimeException());
+    public void deleteById(long id) {
+        if (!existById(id)){
+            throw new LibraryException("Cant't delete non existing book.", new RuntimeException());
         }
-        Map<String, Object> params = Collections.singletonMap("id", book.getId());
+        Map<String, Object> params = Collections.singletonMap("id", id);
         namedParameterJdbcOperations.update(
                 "delete from book " +
                         "where id=:id"
@@ -121,9 +148,11 @@ public class BookDaoJdbc implements BookDao {
             long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
             long authorId = resultSet.getLong("author_id");
-            Author author = authorDao.getById(authorId);
+            String authorName = resultSet.getString("author_name");
+            Author author = new Author(authorId, authorName);
             long genreId = resultSet.getLong("genre_id");
-            Genre genre = genreDao.getById(genreId);
+            String genreName = resultSet.getString("genre_name");
+            Genre genre = new Genre(genreId, genreName);
             return new Book(id, name, author, genre);
         }
     }

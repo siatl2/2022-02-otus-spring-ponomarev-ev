@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.homework05.dao.AuthorDao;
-import ru.otus.homework05.dao.BookDao;
 import ru.otus.homework05.domain.Author;
 import ru.otus.homework05.exception.LibraryException;
 
@@ -26,24 +25,26 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public long insertByName(String name) {
+    public void insert(Author author) {
+        String name = author.getName();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", name);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcOperations.update("insert into author(name) values(:name)", params, keyHolder);
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        author.setId(id);
     }
 
     @Override
     public List<Author> getAll() {
-        return namedParameterJdbcOperations.query("select * from author", new AuthorMapper());
+        return namedParameterJdbcOperations.query("select id, name from author", new AuthorMapper());
     }
 
     @Override
     public Author getById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         return namedParameterJdbcOperations.queryForObject(
-                "select * from author where id=:id"
+                "select id, name from author where id=:id"
                 ,params
                 , new AuthorMapper()
                 );
@@ -53,7 +54,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     public boolean existById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         Integer returnCount = namedParameterJdbcOperations.queryForObject(
-                "select count(*) from author where id=:id"
+                "select count(id) from author where id=:id"
                 ,params
                 , Integer.class
                 );
@@ -61,9 +62,9 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public void update(Author newAuthor) {
-        long id = newAuthor.getId();
-        String name = newAuthor.getName();
+    public void update(Author author) {
+        long id = author.getId();
+        String name = author.getName();
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
@@ -77,7 +78,12 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public void delete(Author author) {
+    public void deleteById(long id) {
+        if (!existById(id)){
+            throw new LibraryException("Cant't delete non existing author", new RuntimeException());
+        }
+        Author author = getById(id);
+
         if (existBookByAuthor(author)){
             throw new LibraryException("Cant't delete author. Author use in book", new RuntimeException());
         }
@@ -91,7 +97,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     private boolean existBookByAuthor(Author author){
         Map<String, Object> params = Collections.singletonMap("id", author.getId());
         Integer returnCount = namedParameterJdbcOperations.queryForObject(
-                "select count(*) from book where author_id=:id"
+                "select count(id) from book where author_id=:id"
                 ,params
                 , Integer.class
         );

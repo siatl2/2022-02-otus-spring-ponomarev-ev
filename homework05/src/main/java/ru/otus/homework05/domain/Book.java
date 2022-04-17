@@ -1,7 +1,8 @@
 package ru.otus.homework05.domain;
 
 public class Book {
-    private final long id;
+    private static final long ID_NOT_FROM_DATABASE = -1L;
+    private long id;
     private final String name;
     private final Author author;
     private final Genre genre;
@@ -11,6 +12,16 @@ public class Book {
         this.name = name;
         this.author = author;
         this.genre = genre;
+    }
+
+    public Book(String name, Author author, Genre genre) {
+        this.name = name;
+        this.author = author;
+        this.genre = genre;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public long getId() {

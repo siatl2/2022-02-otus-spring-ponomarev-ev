@@ -1,7 +1,8 @@
 package ru.otus.homework05.domain;
 
 public class Author {
-    private final long id;
+    private static final long ID_NOT_FROM_DATABASE = -1L;
+    private long id;
     private final String name;
 
     public Author(long id, String name) {
@@ -9,8 +10,17 @@ public class Author {
         this.name = name;
     }
 
+    public Author(String name) {
+        this.id = ID_NOT_FROM_DATABASE;
+        this.name = name;
+    }
+
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
