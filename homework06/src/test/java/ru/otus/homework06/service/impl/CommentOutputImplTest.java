@@ -33,18 +33,14 @@ class CommentOutputImplTest {
             , "    2|new Comment-2"
             , "------------"
     );
-    private final CommentOutput commentOutput;
+    @Autowired
+    private CommentOutput commentOutput;
 
     @MockBean
     private IOServiceStream ioServiceStream;
 
     @Captor
     private ArgumentCaptor<String> interceptOutput;
-
-    @Autowired
-    public CommentOutputImplTest(CommentOutput commentOutput) {
-        this.commentOutput = commentOutput;
-    }
 
     @BeforeEach
     void BeforeEachTest(){

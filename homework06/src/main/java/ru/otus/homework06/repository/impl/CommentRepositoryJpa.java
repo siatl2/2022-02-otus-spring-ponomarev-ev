@@ -3,6 +3,7 @@ package ru.otus.homework06.repository.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.otus.homework06.exception.LibraryException;
+import ru.otus.homework06.model.Book;
 import ru.otus.homework06.model.Comment;
 import ru.otus.homework06.repository.CommentRepository;
 
@@ -24,7 +25,6 @@ public class CommentRepositoryJpa implements CommentRepository {
         this.em = em;
     }
 
-    @Transactional
     @Override
     public Comment save(Comment comment) {
         if (comment.getId() == 0){
@@ -36,14 +36,25 @@ public class CommentRepositoryJpa implements CommentRepository {
     }
 
     @Override
-    public List<Comment> findAll() {
-        TypedQuery<Comment> query = em.createQuery("select e from Comment e join fetch e.book b join fetch b.author join fetch b.genre", Comment.class);
+    public List<Comment> findAllByBookId(Long id) {
+        TypedQuery<Comment> query = em.createQuery("select e from Comment e " + " " +
+                                                        " join fetch e.book b " +
+                                                        " join fetch b.author " +
+                                                        " join fetch b.genre " +
+                                                        " where e.id=:id", Comment.class);
+        query.setParameter("id", id);
         return query.getResultList();
     }
 
     @Override
     public Optional<Comment> findById(long id) {
-        return Optional.ofNullable(em.find(Comment.class, id));
+        Query query = em.createQuery("select e from Comment e " + " " +
+                        " join fetch e.book b " +
+                        " join fetch b.author " +
+                        " join fetch b.genre " +
+                        " where e.id=:id");
+        query.setParameter("id", id);
+        return Optional.ofNullable((Comment) query.getSingleResult());
     }
 
     @Override
@@ -54,13 +65,8 @@ public class CommentRepositoryJpa implements CommentRepository {
         return result > 0;
     }
 
-    @Transactional
     @Override
     public void deleteById(long id) {
-        if (!existById(id)){
-            throw new LibraryException("Cant't delete non existing comment");
-        }
-
         Query query = em.createQuery("delete from Comment e where e.id=:id");
         query.setParameter("id", id);
         query.executeUpdate();

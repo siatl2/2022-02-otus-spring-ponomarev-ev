@@ -30,18 +30,14 @@ public class GenreOutputImplTest {
             , "------------"
             );
 
-    private final GenreOutput genreOutput;
+    @Autowired
+    private GenreOutput genreOutput;
 
     @MockBean
     private IOServiceStream ioServiceStream;
 
     @Captor
     private ArgumentCaptor<String> interceptOutput;
-
-    @Autowired
-    public GenreOutputImplTest(GenreOutput genreOutput) {
-        this.genreOutput = genreOutput;
-    }
 
     @BeforeEach
     void BeforeEachTest(){

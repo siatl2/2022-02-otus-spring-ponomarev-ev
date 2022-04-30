@@ -5,230 +5,136 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.stereotype.Controller;
-import ru.otus.homework06.exception.LibraryException;
-import ru.otus.homework06.model.Comment;
-import ru.otus.homework06.repository.AuthorRepository;
-import ru.otus.homework06.repository.BookRepository;
-import ru.otus.homework06.repository.CommentRepository;
-import ru.otus.homework06.repository.GenreRepository;
-import ru.otus.homework06.model.Author;
-import ru.otus.homework06.model.Book;
-import ru.otus.homework06.model.Genre;
-import ru.otus.homework06.service.AuthorOutput;
-import ru.otus.homework06.service.BookOutput;
-import ru.otus.homework06.service.CommentOutput;
-import ru.otus.homework06.service.GenreOutput;
-
-import java.util.List;
-import java.util.Optional;
+import ru.otus.homework06.service.*;
 
 @Controller
 @ShellComponent
 public class RunnerImpl {
-    private final AuthorOutput authorOutput;
-    private final AuthorRepository authorRepository;
-
-    private final GenreOutput genreOutput;
-    private final GenreRepository genreRepository;
-
-    private final BookOutput bookOutput;
-    private final BookRepository bookRepository;
-    private final CommentOutput commentOutput;
-    private final CommentRepository commentRepository;
+    private final AuthorCrud authorCrud;
+    private final BookCrud bookCrud;
+    private final CommentCrud commentCrud;
+    private final GenreCrud genreCrud;
 
     @Autowired
     public RunnerImpl(
-            AuthorOutput authorOutput
-            , AuthorRepository authorRepository
-            , GenreOutput genreOutput
-            , GenreRepository genreRepository
-            , BookOutput bookOutput
-            , BookRepository bookRepository
-            , CommentOutput commentOutput
-            , CommentRepository commentRepository
+            AuthorCrud authorCrud
+            , BookCrud bookCrud
+            , CommentCrud commentCrud
+            , GenreCrud genreCrud
             ) {
-        this.authorOutput = authorOutput;
-        this.authorRepository = authorRepository;
-        this.genreOutput = genreOutput;
-        this.genreRepository = genreRepository;
-        this.bookOutput = bookOutput;
-        this.bookRepository = bookRepository;
-        this.commentOutput = commentOutput;
-        this.commentRepository = commentRepository;
+        this.authorCrud = authorCrud;
+        this.bookCrud = bookCrud;
+        this.commentCrud = commentCrud;
+        this.genreCrud = genreCrud;
     }
 
-    @ShellMethod("params: --name --authorId --genreId")
+    @ShellMethod("Create book")
     public void createBook(
             @ShellOption String name
             , @ShellOption long authorId
             , @ShellOption long genreId
             ) {
-        Optional<Author> author = authorRepository.findById(authorId);
-        if (!author.isPresent()){
-            throw new LibraryException("Author id not exist");
-        }
-        Optional<Genre> genre = genreRepository.findById(genreId);
-        if (!author.isPresent()){
-            throw new LibraryException("Genre id not exist");
-        }
-        Book book = new Book(0, name, author.get(), genre.get());
-        bookRepository.save(book);
+        bookCrud.createBook(name, authorId, genreId);
     }
 
-    @ShellMethod("params: no")
+    @ShellMethod("Real All Books")
     public void readAllBooks() {
-        List<Book> books = bookRepository.findAll();
-        bookOutput.outputBooks(books);
+        bookCrud.readAllBooks();
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Retrieve Book")
     public void retrieveBook(@ShellOption long id) {
-        Optional<Book> book = bookRepository.findById(id);
-        if (!book.isPresent()){
-            throw new LibraryException("Book id not exist");
-        }
-        bookOutput.outputBook(book.get());
+        bookCrud.retrieveBook(id);
     }
 
-    @ShellMethod("params: --id --name --authorId --genreId")
+    @ShellMethod("Update Book")
     public void updateBook(
             @ShellOption long id
             , @ShellOption String name
             , @ShellOption long authorId
             , @ShellOption long genreId
             ) {
-        Optional<Author> author = authorRepository.findById(authorId);
-        if (!author.isPresent()){
-            throw new LibraryException("Author id not exist");
-        }
-        Optional<Genre> genre = genreRepository.findById(genreId);
-        if (!author.isPresent()){
-            throw new LibraryException("Genre id not exist");
-        }
-        if (!bookRepository.existById(id)){
-            throw new LibraryException("Don't exist book");
-        }
-        Book book = new Book(id, name, author.get(), genre.get());
-        bookRepository.save(book);
+        bookCrud.updateBook(id, name, authorId, genreId);
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Delete Book")
     public void deleteBook(@ShellOption long id) {
-        bookRepository.deleteById(id);
+        bookCrud.deleteBook(id);
     }
 
-    @ShellMethod("params: --name")
+    @ShellMethod("Create Author")
     public void createAuthor(@ShellOption String name) {
-        Author author = new Author(0, name);
-        authorRepository.save(author);
+        authorCrud.createAuthor(name);
     }
 
-    @ShellMethod("params: no")
+    @ShellMethod("Read All Authors")
     public void readAllAuthors() {
-        List<Author> authors = authorRepository.findAll();
-        authorOutput.outputAuthors(authors);
+        authorCrud.readAllAuthors();
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Retrieve Author")
     public void retrieveAuthor(@ShellOption long id) {
-        Optional<Author> author = authorRepository.findById(id);
-        if (!author.isPresent()) {
-           throw new LibraryException("Don't exist author");
-        }
-        authorOutput.outputAuthor(author.get());
+        authorCrud.retrieveAuthor(id);
     }
 
-    @ShellMethod("params: --id --name")
+    @ShellMethod("Update Author")
     public void updateAuthor(@ShellOption long id, @ShellOption String name) {
-        if (!authorRepository.existById(id)){
-            throw new LibraryException("Don't exist author");
-        }
-        Author author = new Author(id, name);
-        authorRepository.save(author);
+        authorCrud.updateAuthor(id, name);
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Delete Author")
     public void deleteAuthor(@ShellOption long id) {
-        authorRepository.deleteById(id);
+        authorCrud.deleteAuthor(id);
     }
 
-    @ShellMethod("params: --book-id --name")
+    @ShellMethod("Create Comment")
     public void createComment(@ShellOption long bookId, @ShellOption String name) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if (!book.isPresent()){
-            throw new LibraryException("Don't exist book");
-        }
-        Comment comment = new Comment(0, name, book.get());
-        commentRepository.save(comment);
+        commentCrud.createComment(bookId, name);
     }
 
-    @ShellMethod("params: no")
-    public void readAllComments() {
-        List<Comment> commnents = commentRepository.findAll();
-        commentOutput.outputComments(commnents);
+    @ShellMethod("Read All Comments")
+    public void readAllComments(@ShellOption long bookId) {
+        commentCrud.readAllCommentsByBookId(bookId);
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Retrieve Comment")
     public void retrieveComment(@ShellOption long id) {
-        Optional<Comment> comment = commentRepository.findById(id);
-        if (comment.isPresent()) {
-            throw new LibraryException("Don't exist comment");
-        }
-        commentOutput.outputComment(comment.get());
+        commentCrud.retrieveComment(id);
     }
 
-    @ShellMethod("params: --id --bookId --name")
+    @ShellMethod("Update Comment")
     public void updateComment(@ShellOption long id, @ShellOption long bookId, @ShellOption String name) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if (!book.isPresent()){
-            throw new LibraryException("Don't exist book");
-        }
-
-        if (!commentRepository.existById(id)){
-            throw new LibraryException("Don't exist comment");
-        }
-
-        Comment comment = new Comment(id, name, book.get());
-        commentRepository.save(comment);
+        commentCrud.updateComment(id, bookId, name);
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Delete Comment")
     public void deleteComment(@ShellOption long id) {
-        commentRepository.deleteById(id);
+        commentCrud.deleteComment(id);
     }
 
-    @ShellMethod("params: --name")
+    @ShellMethod("Create Genre")
     public void createGenre(@ShellOption String name) {
-        Genre genre = new Genre(0, name);
-        genreRepository.save(genre);
+        genreCrud.createGenre(name);
     }
 
-    @ShellMethod("params: no")
+    @ShellMethod("Read All Genres")
     public void readAllGenres() {
-        List<Genre> genres = genreRepository.findAll();
-        genreOutput.outputGenres(genres);
+        genreCrud.readAllGenres();
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Retrieve Genre")
     public void retrieveGenre(@ShellOption long id) {
-        Optional<Genre> genre = genreRepository.findById(id);
-        if (genre.isPresent()) {
-            genreOutput.outputGenre(genre.get());
-        }
+        genreCrud.retrieveGenre(id);
     }
 
-    @ShellMethod("params: --id --name")
+    @ShellMethod("Update Genre")
     public void updateGenre(@ShellOption long id, @ShellOption String name) {
-        if (!genreRepository.existById(id)){
-            throw new LibraryException("Don't exist genre");
-        }
-        Genre genre = new Genre(id, name);
-        genreRepository.save(genre);
+        genreCrud.updateGenre(id, name);
     }
 
-    @ShellMethod("params: --id")
+    @ShellMethod("Delete Genre")
     public void deleteGenre(@ShellOption long id) {
-        genreRepository.deleteById(id);
+        genreCrud.deleteGenre(id);
     }
 
 }

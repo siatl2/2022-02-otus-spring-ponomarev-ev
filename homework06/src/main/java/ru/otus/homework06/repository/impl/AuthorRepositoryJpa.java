@@ -23,7 +23,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         this.em = em;
     }
 
-    @Transactional
     @Override
     public Author save(Author author) {
         if (author.getId() == 0){
@@ -53,13 +52,8 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return result > 0;
     }
 
-    @Transactional
     @Override
     public void deleteById(long id) {
-        if (!existById(id)){
-            throw new LibraryException("Cant't delete non existing author");
-        }
-
         Query query = em.createQuery("delete from Author e where e.id=:id");
         query.setParameter("id", id);
         query.executeUpdate();

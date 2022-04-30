@@ -32,17 +32,13 @@ class BookRepositoryJpaTest {
     private static final long SOME_EXISTING_GENRE_ID = 1L;
     private static final String SOME_EXISTING_GENRE_NAME = "Adventure literature";
 
-    private final TestEntityManager em;
-    private final BookRepository bookRepository;
-
     @Autowired
-    public BookRepositoryJpaTest(BookRepository bookRepository, TestEntityManager em) {
-        this.bookRepository = bookRepository;
-        this.em = em;
-    }
+    private TestEntityManager em;
+    @Autowired
+    private BookRepository bookRepository;
 
     @Test
-    void save_newValue() {
+    void saveNewValue() {
         String name = "New Original book";
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
@@ -56,7 +52,7 @@ class BookRepositoryJpaTest {
     }
 
     @Test
-    void save_existingValue() {
+    void saveExistingValue() {
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
 

@@ -32,18 +32,14 @@ class BookOutputImplTest {
             , " ------------------------------------------------------------"
     );
 
-    private final BookOutput bookOutput;
+    @Autowired
+    private BookOutput bookOutput;
 
     @MockBean
     private IOServiceStream ioServiceStream;
 
     @Captor
     private ArgumentCaptor<String> interceptOutput;
-
-    @Autowired
-    public BookOutputImplTest(BookOutput bookOutput) {
-        this.bookOutput = bookOutput;
-    }
 
     @BeforeEach
     void BeforeEachTest(){

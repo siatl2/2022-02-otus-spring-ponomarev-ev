@@ -21,9 +21,27 @@ public class Comment {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOOK_ID")
     private Book book;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment)) return false;
 
+        Comment comment = (Comment) o;
+
+        if (id != comment.id) return false;
+        if (!name.equals(comment.name)) return false;
+        return book.equals(comment.book);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + name.hashCode();
+        result = 31 * result + book.hashCode();
+        return result;
+    }
 }

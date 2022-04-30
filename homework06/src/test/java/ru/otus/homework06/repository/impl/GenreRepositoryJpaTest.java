@@ -19,18 +19,13 @@ class GenreRepositoryJpaTest {
     private static final long EXISTING_SIZE_LIST = 1L;
     private static final long EXISTING_ID = 1L;
     private static final String EXISTING_VALUE = "Adventure literature";
-    private final GenreRepositoryJpa jpa;
-    private final TestEntityManager em;
-
     @Autowired
-    public GenreRepositoryJpaTest(GenreRepositoryJpa jpa
-            , TestEntityManager em) {
-        this.jpa = jpa;
-        this.em = em;
-    }
+    private GenreRepositoryJpa jpa;
+    @Autowired
+    private TestEntityManager em;
 
     @Test
-    void save_newValue() {
+    void saveNewValue() {
         String expectedValue = "New genre";
         Genre genre = new Genre(0, expectedValue);
         genre = jpa.save(genre);
@@ -43,7 +38,7 @@ class GenreRepositoryJpaTest {
     }
 
     @Test
-    void save_exisitingValue() {
+    void saveExisitingValue() {
         String newName = EXISTING_VALUE + "_NEW";
         Genre expectedValue = new Genre(EXISTING_ID, newName);
         expectedValue = jpa.save(expectedValue);

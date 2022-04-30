@@ -21,17 +21,13 @@ class AuthorRepositoryJpaTest {
     private static final long EXISTING_SIZE_LIST = 1L;
     private static final long EXISTING_ID = 1L;
     private static final String EXISTING_VALUE = "JACK LONDON";
-    private final AuthorRepositoryJpa jpa;
-    private final TestEntityManager em;
-
     @Autowired
-    public AuthorRepositoryJpaTest(AuthorRepositoryJpa jpa
-                                    , TestEntityManager em) {
-        this.jpa = jpa;
-        this.em = em;
-    }
+    private AuthorRepositoryJpa jpa;
+    @Autowired
+    private TestEntityManager em;
+
     @Test
-    void save_newValue() {
+    void saveNewValue() {
         String expectedValue = "Vasya-authur";
         Author author = new Author(0, expectedValue);
         author = jpa.save(author);
@@ -44,7 +40,7 @@ class AuthorRepositoryJpaTest {
     }
 
     @Test
-    void save_exisitingValue() {
+    void saveExisitingValue() {
         String newName = "JACK LONDON JR";
         Author expectedValue = new Author(EXISTING_ID, newName);
         expectedValue = jpa.save(expectedValue);

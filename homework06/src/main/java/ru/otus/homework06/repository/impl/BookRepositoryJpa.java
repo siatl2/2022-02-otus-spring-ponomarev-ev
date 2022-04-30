@@ -21,7 +21,6 @@ public class BookRepositoryJpa implements BookRepository {
         this.em = em;
     }
 
-    @Transactional
     @Override
     public Book save(Book book) {
         if (book.getId() == 0){
@@ -40,7 +39,13 @@ public class BookRepositoryJpa implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        return Optional.ofNullable(em.find(Book.class, id));
+        Query query = em.createQuery("select e" +
+                                        " from Book e" +
+                                        " join fetch e.author" +
+                                        " join fetch e.genre" +
+                                        " where e.id=:id");
+        query.setParameter("id", id);
+        return Optional.ofNullable((Book)query.getSingleResult());
     }
 
     @Override
@@ -51,13 +56,8 @@ public class BookRepositoryJpa implements BookRepository {
         return result > 0;
     }
 
-    @Transactional
     @Override
     public void deleteById(long id) {
-        if (!existById(id)){
-            throw new LibraryException("Cant't delete non existing book");
-        }
-
         Query query = em.createQuery("delete from Book e where e.id=:id");
         query.setParameter("id", id);
         query.executeUpdate();

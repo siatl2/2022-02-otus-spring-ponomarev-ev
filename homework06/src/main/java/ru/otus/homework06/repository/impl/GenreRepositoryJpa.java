@@ -23,7 +23,6 @@ public class GenreRepositoryJpa implements GenreRepository {
         this.em = em;
     }
 
-    @Transactional
     @Override
     public Genre save(Genre genre) {
         if (genre.getId() == 0){
@@ -53,13 +52,8 @@ public class GenreRepositoryJpa implements GenreRepository {
         return result > 0;
     }
 
-    @Transactional
     @Override
     public void deleteById(long id) {
-        if (!existById(id)){
-            throw new LibraryException("Cant't delete non existing author");
-        }
-
         Query query = em.createQuery("delete from Genre e where e.id=:id");
         query.setParameter("id", id);
         query.executeUpdate();

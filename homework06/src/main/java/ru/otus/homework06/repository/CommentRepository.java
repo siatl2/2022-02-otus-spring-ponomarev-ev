@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CommentRepository {
     Comment save(Comment comment);
-    List<Comment> findAll();
+    List<Comment> findAllByBookId(Long id);
     Optional<Comment> findById(long id);
     boolean existById(long id);
     void deleteById(long id);

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import(CommentRepositoryJpa.class)
 class CommentRepositoryJpaTest {
-    private static final long EXISTING_SIZE_LIST = 2L;
+    private static final long EXISTING_SIZE_LIST = 1L;
     private static final long EXISTING_ID = 1L;
     private static final String EXISTING_VALUE = "COMMENT-1";
 
@@ -28,18 +28,13 @@ class CommentRepositoryJpaTest {
     private static final String SOME_EXISTING_AUTHOR_NAME = "JACK LONDON";
     private static final long SOME_EXISTING_GENRE_ID = 1L;
     private static final String SOME_EXISTING_GENRE_NAME = "Adventure literature";
-    private final CommentRepositoryJpa jpa;
-    private final TestEntityManager em;
-
     @Autowired
-    public CommentRepositoryJpaTest(CommentRepositoryJpa jpa
-            , TestEntityManager em) {
-        this.jpa = jpa;
-        this.em = em;
-    }
+    private CommentRepositoryJpa jpa;
+    @Autowired
+    private TestEntityManager em;
 
     @Test
-    void save_newValue() {
+    void saveNewValue() {
         String expectedValue = "new Comment";
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
@@ -56,7 +51,7 @@ class CommentRepositoryJpaTest {
     }
 
     @Test
-    void save_existingValue() {
+    void saveExistingValue() {
         String expectedValue = EXISTING_VALUE + "_NEW";
         Author author = new Author(SOME_EXISTING_AUTHOR_ID, SOME_EXISTING_AUTHOR_NAME);
         Genre genre = new Genre(SOME_EXISTING_GENRE_ID, SOME_EXISTING_GENRE_NAME);
@@ -74,7 +69,7 @@ class CommentRepositoryJpaTest {
     @Test
     void findAll() {
         long expectedValue = EXISTING_SIZE_LIST;
-        List<Comment> comments = jpa.findAll();
+        List<Comment> comments = jpa.findAllByBookId(SOME_EXISTING_BOOK_ID);
         long actualValue = comments.size();
         assertEquals(expectedValue, actualValue);
     }

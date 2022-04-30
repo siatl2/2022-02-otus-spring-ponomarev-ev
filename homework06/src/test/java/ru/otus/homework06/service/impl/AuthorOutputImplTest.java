@@ -29,18 +29,14 @@ class AuthorOutputImplTest {
                                                     , "    2|kolea-author"
                                                     , "------------"
                                                     );
-    private final AuthorOutput authorOutput;
+    @Autowired
+    private AuthorOutput authorOutput;
 
     @MockBean
     private IOServiceStream ioServiceStream;
 
     @Captor
     private ArgumentCaptor<String> interceptOutput;
-
-    @Autowired
-    public AuthorOutputImplTest(AuthorOutput authorOutput) {
-        this.authorOutput = authorOutput;
-    }
 
     @BeforeEach
     void BeforeEachTest(){
