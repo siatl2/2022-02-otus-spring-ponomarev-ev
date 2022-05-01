@@ -8,3 +8,4 @@ public interface GenreOutput {
     void outputGenre(Genre genre);
     void outputGenres(List<Genre> genres);
 }
+

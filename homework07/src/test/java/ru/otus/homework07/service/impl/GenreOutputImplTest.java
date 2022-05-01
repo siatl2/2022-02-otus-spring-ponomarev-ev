@@ -78,3 +78,4 @@ public class GenreOutputImplTest {
         assertEquals(expectedValue, actualValue);
     }
 }
+

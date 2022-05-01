@@ -85,3 +85,4 @@ public class BookCrudImpl implements BookCrud {
         bookRepository.deleteById(id);
     }
 }
+

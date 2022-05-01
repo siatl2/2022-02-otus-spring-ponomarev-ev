@@ -7,3 +7,4 @@ public interface BookCrud {
     void updateBook(long id, String name, long authorId, long genreId);
     void deleteBook(long id);
 }
+

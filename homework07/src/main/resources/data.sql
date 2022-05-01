@@ -30,3 +30,4 @@ UNION ALL
     SELECT
         'COMMENT-4'
         , 1;
+

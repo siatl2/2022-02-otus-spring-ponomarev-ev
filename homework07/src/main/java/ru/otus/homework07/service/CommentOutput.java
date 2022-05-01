@@ -8,3 +8,4 @@ public interface CommentOutput {
     void outputComment(Comment comment);
     void outputComments(List<Comment> comments);
 }
+

@@ -77,3 +77,4 @@ class AuthorOutputImplTest {
         assertEquals(expectedValue, actualValue);
     }
 }
+

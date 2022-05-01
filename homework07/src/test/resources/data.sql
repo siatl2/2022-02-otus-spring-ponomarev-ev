@@ -22,3 +22,4 @@ UNION ALL
     SELECT
         'COMMENT-2'
         , CURRENT VALUE FOR SEC_BOOK;
+
