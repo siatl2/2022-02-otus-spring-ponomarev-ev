@@ -7,3 +7,4 @@ public interface GenreCrud {
     void updateGenre(long id, String name);
     void deleteGenre(long id);
 }
+

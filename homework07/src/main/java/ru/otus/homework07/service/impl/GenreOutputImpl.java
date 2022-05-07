@@ -38,3 +38,4 @@ public class GenreOutputImpl implements GenreOutput {
         ioService.outputString("------------");
     }
 }
+

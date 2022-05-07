@@ -8,3 +8,4 @@ public interface BookOutput {
     void outputBook(Book book);
     void outputBooks(List<Book> books);
 }
+

@@ -38,3 +38,4 @@ public class AuthorOutputImpl implements AuthorOutput {
         ioService.outputString("------------");
     }
 }
+

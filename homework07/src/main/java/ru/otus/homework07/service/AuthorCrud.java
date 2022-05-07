@@ -7,3 +7,4 @@ public interface AuthorCrud {
     void updateAuthor(long id, String name);
     void deleteAuthor(long id);
 }
+

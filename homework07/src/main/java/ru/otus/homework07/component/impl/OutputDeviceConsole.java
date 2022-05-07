@@ -12,3 +12,4 @@ public class OutputDeviceConsole implements OutputDevice {
         return System.out;
     }
 }
+

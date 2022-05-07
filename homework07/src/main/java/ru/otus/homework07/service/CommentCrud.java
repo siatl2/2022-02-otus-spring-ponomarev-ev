@@ -7,3 +7,4 @@ public interface CommentCrud {
     void updateComment(long id, long bookId, String name);
     void deleteComment(long id);
 }
+

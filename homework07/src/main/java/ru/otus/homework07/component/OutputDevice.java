@@ -5,3 +5,4 @@ import java.io.PrintStream;
 public interface OutputDevice {
     PrintStream getPrintStream();
 }
+

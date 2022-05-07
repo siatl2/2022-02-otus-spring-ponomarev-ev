@@ -38,3 +38,4 @@ public class CommentOutputImpl implements CommentOutput {
         ioService.outputString("------------");
     }
 }
+

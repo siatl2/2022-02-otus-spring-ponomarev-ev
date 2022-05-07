@@ -8,3 +8,4 @@ public interface AuthorOutput {
     void outputAuthor(Author author);
     void outputAuthors(List<Author> authors);
 }
+
