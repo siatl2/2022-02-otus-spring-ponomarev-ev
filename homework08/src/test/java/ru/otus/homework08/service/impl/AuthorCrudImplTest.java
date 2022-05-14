@@ -11,6 +11,7 @@ import ru.otus.homework08.model.Author;
 import ru.otus.homework08.repository.AuthorRepository;
 import ru.otus.homework08.service.AuthorCrud;
 import ru.otus.homework08.service.AuthorOutput;
+import ru.otus.homework08.service.SequenceGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ class AuthorCrudImplTest {
     private AuthorOutput authorOutput;
     @MockBean
     private AuthorRepository authorRepository;
+    @MockBean
+    private SequenceGenerator sequenceGenerator;
     @Captor
     private ArgumentCaptor<List<Author>> authorsCaptor;
     @Captor
@@ -48,6 +51,7 @@ class AuthorCrudImplTest {
     void readAllAuthors() {
         List<Author> authors = new ArrayList<>();
         when(authorRepository.findAll()).thenReturn(authors);
+        when(sequenceGenerator.getSequenceNumber(anyString())).thenReturn(1L);
         doNothing().when(authorOutput).outputAuthors(authorsCaptor.capture());
 
         authorCrud.readAllAuthors();
