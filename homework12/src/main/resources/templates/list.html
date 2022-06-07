@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+        crossorigin="anonymous"></script>
+<div class="container mt-5">
+    <table class="table table-striped">
+        <tr>
+            <td>
+                <div class="mb-3 row">
+                    <label for="fullName" class="col-sm-2 col-form-label"> Читатель </label>
+                    <div class="col-sm-10" th:text="${fullname}">
+                        <input type="text" readonly class="form-control-plaintext" id="fullName">
+                    </div>
+                </div>
+            </td>
+            <td>
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" class="btn btn-primary" value="Log Out"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <h3 class="h3"> Books </h3><br>
+    <a title="add book" href="edit.html" th:href="@{/books/add}" class="btn btn-primary" role="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+             class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+        </svg>
+        Add book
+    </a>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>id</th>
+            <th>name</th>
+            <th>author</th>
+            <th>genre</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td>
+                <a href="#" title="delete book" th:href="@{/books/delete(id=${book.id})}" class="btn btn-primary"
+                   role="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-x-circle-fill bg-red" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                    </svg>
+                    Delete book
+                </a>
+            </td>
+            <td>
+                <a title="edit" th:href="@{/books/get(id=${book.id})}" th:text="${book.id}">
+                    1
+                </a>
+            </td>
+            <td>
+                <a title="edit" th:href="@{/books/get(id=${book.id})}" th:text="${book.name}">
+                    WHITE RABBIT
+                </a>
+            </td>
+            <td>
+                <a title="edit" th:href="@{/books/get(id=${book.id})}" th:text="${book.author.name}">
+                    JACK LONDON
+                </a>
+            </td>
+            <td>
+                <a title="edit" th:href="@{/books/get(id=${book.id})}" th:text="${book.genre.name}">
+                    Romantic literature
+                </a>
+            </td>
+            <td>
+                <a title="view comments" href="comments.html" th:href="@{/comments(bookId=${book.id})}"
+                   class="btn btn-primary" role="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-menu-up" viewBox="0 0 16 16">
+                        <path d="M7.646 15.854a.5.5 0 0 0 .708 0L10.207 14H14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3.793l1.853 1.854zM1 9V6h14v3H1zm14 1v2a1 1 0 0 1-1 1h-3.793a1 1 0 0 0-.707.293l-1.5 1.5-1.5-1.5A1 1 0 0 0 5.793 13H2a1 1 0 0 1-1-1v-2h14zm0-5H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v2zM2 11.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 0-1h-8a.5.5 0 0 0-.5.5zm0-4a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11a.5.5 0 0 0-.5.5zm0-4a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1h-6a.5.5 0 0 0-.5.5z"/>
+                    </svg>
+                    View comments
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
