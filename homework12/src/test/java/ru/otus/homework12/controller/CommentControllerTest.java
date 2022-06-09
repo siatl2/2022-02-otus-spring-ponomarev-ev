@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,8 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CommentController.class)
@@ -68,6 +68,16 @@ class CommentControllerTest {
                 , () -> verify(commentCrud, times(1)).readAllCommentsByBookId(anyLong())
                 , () -> assertEquals(SOME_ID, idCaptor.getValue())
         );
+    }
+
+    @Test
+    @WithAnonymousUser
+    void readAllCommentsRedirectToLogin() throws Exception {
+        mvc.perform(get("/comments")
+                        .param("bookId", String.valueOf(SOME_ID))
+                        .param("model", String.valueOf(new ConcurrentModel())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("http://**/login"));
     }
 
     @Test

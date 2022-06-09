@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.otus.homework12.exception.NotFoundException;
 import ru.otus.homework12.model.Reader;
 import ru.otus.homework12.repository.ReaderRepository;
 
@@ -26,6 +25,6 @@ public class ReaderService implements UserDetailsService {
             return reader;
         }
 
-        throw new NotFoundException();
+        throw new UsernameNotFoundException("Reader not found");
     }
 }

@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,12 +50,10 @@ class BookControllerTest {
     private ReaderService readerService;
     @MockBean
     private ReaderCurrentImpl readerCurrent;
-
     @Captor
     private ArgumentCaptor<Long> idCaptor;
     @Captor
     private ArgumentCaptor<Book> bookCaptor;
-
 
     @Test
     @WithMockUser(
@@ -76,6 +75,17 @@ class BookControllerTest {
                 () -> verify(bookCrud, times(1)).saveBook(any())
                 , () -> assertEquals(book, bookCaptor.getValue())
         );
+    }
+
+    @Test
+    @WithAnonymousUser
+    void saveBookRedirectToLogin() throws Exception {
+        Book book = new Book();
+        mvc.perform(post("/books/save")
+                        .param("book", String.valueOf(book))
+                        .param("model", String.valueOf(new ConcurrentModel())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("http://**/login"));
     }
 
     @WithMockUser(
@@ -100,6 +110,15 @@ class BookControllerTest {
         );
     }
 
+    @Test
+    @WithAnonymousUser
+    void addBookRedirectToLogin() throws Exception {
+        mvc.perform(get("/books/add")
+                        .param("model", String.valueOf(new ConcurrentModel())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("http://**/login"));
+    }
+
     @WithMockUser(
             username = "DOE",
             authorities = {"ROLE_USER"}
@@ -115,6 +134,15 @@ class BookControllerTest {
                 .andExpect(view().name("list"));
 
         verify(bookCrud, times(1)).readAllBooks();
+    }
+
+    @Test
+    @WithAnonymousUser
+    void readAllBooksRedirectToLogin() throws Exception {
+        mvc.perform(get("/books")
+                        .param("model", String.valueOf(new ConcurrentModel())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("http://**/login"));
     }
 
     @WithMockUser(
@@ -142,6 +170,16 @@ class BookControllerTest {
                 , () -> verify(authorCrud, times(1)).readAllAuthors()
                 , () -> verify(genreCrud, times(1)).readAllGenres()
         );
+    }
+
+    @Test
+    @WithAnonymousUser
+    void retrieveBookRedirectToLogin() throws Exception {
+        mvc.perform(get("/books/get")
+                        .param("id", String.valueOf(SOME_ID))
+                        .param("model", String.valueOf(new ConcurrentModel())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("http://**/login"));
     }
 
     @WithMockUser(
@@ -180,5 +218,15 @@ class BookControllerTest {
                 () -> verify(bookCrud, times(1)).deleteBook(anyLong())
                 , () -> assertEquals(SOME_ID, idCaptor.getValue())
         );
+    }
+
+    @Test
+    @WithAnonymousUser
+    void deleteBookRedirectToLogin() throws Exception {
+        mvc.perform(get("/books/delete")
+                        .param("id", String.valueOf(SOME_ID))
+                        .param("model", String.valueOf(new ConcurrentModel())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("http://**/login"));
     }
 }
