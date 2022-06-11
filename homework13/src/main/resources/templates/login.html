@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Вход</title>
+</head>
+<body>
+<div th:if="${param.error}">
+    <font color="red">Неверно введен логин, пароль</font>
+</div>
+<div th:if="${param.logout}">
+    Вы вышли из сессии
+</div>
+
+<h1>Book</h1>
+
+<h3>Login page</h3>
+
+<form th:action="@{/login}" method="post">
+    <table>
+        <tr>
+            <td>Логин :</td>
+            <td><input type="text" name="j_login"/></td>
+        </tr>
+        <tr>
+            <td>Пароль :</td>
+            <td><input type="password" name="j_password"/></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Вход"/></td>
+            <td></td>
+        </tr>
+    </table>
+</form>
+<br><br><br><br>
+Данные для входа (приведены для удобства))<br><br>
+<table>
+    <tr>
+        <td>Логин1:</td>
+        <td><i>DOE</i></td>
+        <td>Full access</td>
+    </tr>
+    <tr>
+        <td>Пароль1:</td>
+        <td><i>DOE</i></td>
+        <td></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td>Логин2:</td>
+        <td><i>SMITH</i></td>
+        <td>Read-only access</td>
+    </tr>
+    <tr>
+        <td>Пароль2:</td>
+        <td><i>SMITH</i></td>
+        <td></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td>Логин3:</td>
+        <td><i>NOBODY</i></td>
+        <td>No access</td>
+    </tr>
+    <tr>
+        <td>Пароль2:</td>
+        <td><i>NOBODY</i></td>
+        <td></td>
+    </tr>
+
+</table>
+</body>
+</html>
