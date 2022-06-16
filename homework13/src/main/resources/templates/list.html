@@ -40,7 +40,7 @@
     </table>
 
     <h3 class="h3"> Books </h3><br>
-    <div sec:authorize="hasAuthority('ADMIN')">
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
         <a title="add book" href="edit.html" th:href="@{/books/add}" class="btn btn-primary" role="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                  class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
@@ -63,7 +63,7 @@
         <tbody>
         <tr th:each="book : ${books}">
             <td>
-                <div sec:authorize="hasAuthority('ADMIN')">
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <a href="#" title="delete book" th:href="@{/books/delete(id=${book.id})}" class="btn btn-primary"
                        role="button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

@@ -63,7 +63,7 @@
                     </a>
                 </td>
                 <td>
-                    <div sec:authorize="hasAuthority('ADMIN')">
+                    <div sec:authorize="hasRole('ROLE_ADMIN')">
                         <button title="save changes" type="submit" class="btn btn-primary shadow-none ms-5"
                                 role="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -85,7 +85,7 @@
         </div>
         <div class="mb-3 mt-1">
             <td>
-                <div sec:authorize="hasAuthority('ADMIN')">
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <label for="name" class="form-label">Name</label>
                     <input id="name" type="text" th:field="${book.name}" required class="col-sm-6 form-control"
                            aria-label="default input example">
@@ -93,7 +93,7 @@
                         Please, enter name.
                     </div>
                 </div>
-                <div sec:authorize="!hasAuthority('ADMIN')">
+                <div sec:authorize="!hasRole('ROLE_ADMIN')">
                     <label for="name_disable" class="form-label">Name</label>
                     <input id="name_disable" type="text" th:field="${book.name}" disabled class="col-sm-6 form-control"
                            aria-label="Disabled input example">
@@ -101,14 +101,14 @@
             </td>
         </div>
         <div class="mb-3 mt-1">
-            <div sec:authorize="hasAuthority('ADMIN')">
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
                 <label for="author" class="form-label">Author</label>
                 <select id="author" th:field="*{author}" class="col-sm-6 form-select"
                         aria-label="Default select example">
                     <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.name}"></option>
                 </select>
             </div>
-            <div sec:authorize="!hasAuthority('ADMIN')">
+            <div sec:authorize="!hasRole('ROLE_ADMIN')">
                 <label for="author_disable" class="form-label">Author</label>
                 <select id="author_disable" th:field="*{author}" disabled class="col-sm-6 form-select"
                         aria-label="Disabled select example">
@@ -117,13 +117,13 @@
             </div>
         </div>
         <div class="mb-3 mt-1">
-            <div sec:authorize="hasAuthority('ADMIN')">
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
                 <label for="genre" class="form-label">Genre</label>
                 <select id="genre" th:field="*{genre}" class="col-sm-6 form-select" aria-label="Default select example">
                     <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}"></option>
                 </select>
             </div>
-            <div sec:authorize="!hasAuthority('ADMIN')">
+            <div sec:authorize="!hasRole('ROLE_ADMIN')">
                 <label for="genre_disabled" class="form-label">Genre</label>
                 <select id="genre_disabled" th:field="*{genre}" disabled class="col-sm-6 form-select"
                         aria-label="Default select example">

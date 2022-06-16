@@ -33,7 +33,7 @@ public class Reader implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(role));
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override
