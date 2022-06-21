@@ -7,16 +7,19 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.ConcurrentModel;
+import ru.otus.homework13.config.BookSecurityConfig;
 import ru.otus.homework13.model.Author;
 import ru.otus.homework13.model.Book;
 import ru.otus.homework13.model.Genre;
 import ru.otus.homework13.service.AuthorCrud;
 import ru.otus.homework13.service.BookCrud;
+import ru.otus.homework13.service.CommentCrud;
 import ru.otus.homework13.service.GenreCrud;
 import ru.otus.homework13.service.impl.ReaderCurrentImpl;
 import ru.otus.homework13.service.impl.ReaderService;
@@ -37,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(BookController.class)
+@Import({BookSecurityConfig.class, ReaderService.class})
 class BookControllerTest {
     private static final long SOME_ID = 1L;
     @Autowired
@@ -51,16 +55,15 @@ class BookControllerTest {
     private ReaderService readerService;
     @MockBean
     private ReaderCurrentImpl readerCurrent;
+    @MockBean
+    private CommentCrud commentCrud;
     @Captor
     private ArgumentCaptor<Long> idCaptor;
     @Captor
     private ArgumentCaptor<Book> bookCaptor;
 
     @Test
-    @WithMockUser(
-            username = "DOE",
-            authorities = {"ADMIN"}
-    )
+    @WithMockUser(roles = {"ADMIN"})
     void saveBook() throws Exception {
         doNothing().when(bookCrud).saveBook(bookCaptor.capture());
 
@@ -80,13 +83,11 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(
-            username = "SMITH",
-            authorities = {"USER"}
-    )
-    void saveBookIncorrectUser() throws Exception {
+    @WithMockUser(roles = {"ZZ"})
+    void saveBookIncorrectRoles() throws Exception {
         Book book = new Book();
         mvc.perform(post("/books/save")
+                        .with(csrf())
                         .param("book", String.valueOf(book))
                         .param("model", String.valueOf(new ConcurrentModel())))
                 .andExpect(status().isForbidden());
@@ -95,20 +96,16 @@ class BookControllerTest {
 
     @Test
     @WithAnonymousUser
-    void saveBookRedirectToLogin() throws Exception {
+    void saveBookWhenAnonimus() throws Exception {
         Book book = new Book();
         mvc.perform(post("/books/save")
                         .with(csrf())
                         .param("book", String.valueOf(book))
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://**/login"));
+                .andExpect(status().isUnauthorized());
     }
 
-    @WithMockUser(
-            username = "DOE",
-            authorities = {"ADMIN"}
-    )
+    @WithMockUser(roles = {"ADMIN"})
     @Test
     void addBook() throws Exception {
         List<Author> authors = new ArrayList<>();
@@ -129,17 +126,13 @@ class BookControllerTest {
 
     @Test
     @WithAnonymousUser
-    void addBookRedirectToLogin() throws Exception {
+    void addBookWhenAnonimus() throws Exception {
         mvc.perform(get("/books/add")
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://**/login"));
+                .andExpect(status().isUnauthorized());
     }
 
-    @WithMockUser(
-            username = "DOE",
-            authorities = {"ADMIN"}
-    )
+    @WithMockUser(roles = {"ADMIN"})
     @Test
     void readAllBooks() throws Exception {
         List<Book> books = new ArrayList<>();
@@ -155,19 +148,15 @@ class BookControllerTest {
 
     @Test
     @WithAnonymousUser
-    void readAllBooksRedirectToLogin() throws Exception {
+    void readAllBooksWhenAnonimous() throws Exception {
         mvc.perform(get("/books")
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://**/login"));
+                .andExpect(status().isUnauthorized());
     }
 
-    @WithMockUser(
-            username = "DOE",
-            authorities = {"ADMIN"}
-    )
+    @WithMockUser(roles = {"ADMIN"})
     @Test
-    void retrieveBook() throws Exception {
+    void retrieveBookWhenAdmin() throws Exception {
         Book book = new Book();
         List<Author> authors = new ArrayList<>();
         List<Genre> genres = new ArrayList<>();
@@ -191,59 +180,10 @@ class BookControllerTest {
 
     @Test
     @WithAnonymousUser
-    void retrieveBookRedirectToLogin() throws Exception {
+    void retrieveBookWhenAnonymous() throws Exception {
         mvc.perform(get("/books/get")
                         .param("id", String.valueOf(SOME_ID))
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://**/login"));
-    }
-
-    @WithMockUser(
-            username = "DOE",
-            authorities = {"ADMIN"}
-    )
-    @Test
-    void retrieveBookExceptionNotFound() throws Exception {
-        List<Author> authors = new ArrayList<>();
-        List<Genre> genres = new ArrayList<>();
-        when(bookCrud.retrieveBook(anyLong())).thenReturn(Optional.empty());
-        when(authorCrud.readAllAuthors()).thenReturn(authors);
-        when(genreCrud.readAllGenres()).thenReturn(genres);
-
-        mvc.perform(get("/books/get")
-                        .param("id", String.valueOf(SOME_ID))
-                        .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().isNotFound());
-    }
-
-    @WithMockUser(
-            username = "DOE",
-            authorities = {"ADMIN"}
-    )
-    @Test
-    void deleteBook() throws Exception {
-        doNothing().when(bookCrud).deleteBook(idCaptor.capture());
-
-        mvc.perform(get("/books/delete")
-                        .param("id", String.valueOf(SOME_ID))
-                        .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/books"));
-
-        assertAll(
-                () -> verify(bookCrud, times(1)).deleteBook(anyLong())
-                , () -> assertEquals(SOME_ID, idCaptor.getValue())
-        );
-    }
-
-    @Test
-    @WithAnonymousUser
-    void deleteBookRedirectToLogin() throws Exception {
-        mvc.perform(get("/books/delete")
-                        .param("id", String.valueOf(SOME_ID))
-                        .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("http://**/login"));
+                .andExpect(status().isUnauthorized());
     }
 }

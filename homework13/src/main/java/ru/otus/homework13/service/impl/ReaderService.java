@@ -10,7 +10,6 @@ import ru.otus.homework13.repository.ReaderRepository;
 
 @Service
 public class ReaderService implements UserDetailsService {
-
     private final ReaderRepository readerRepository;
 
     @Autowired
@@ -21,10 +20,10 @@ public class ReaderService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Reader reader = readerRepository.findByLogin(username);
-        if (reader != null) {
-            return reader;
-        }
+        if (reader == null) {
+            throw new UsernameNotFoundException("Reader not found");
 
-        throw new UsernameNotFoundException("Reader not found");
+        }
+        return reader;
     }
 }

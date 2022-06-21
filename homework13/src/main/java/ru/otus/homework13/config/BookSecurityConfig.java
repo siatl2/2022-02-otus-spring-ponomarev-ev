@@ -1,7 +1,5 @@
 package ru.otus.homework13.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,15 +7,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import ru.otus.homework13.service.impl.ReaderService;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final ReaderService readerService;
+import javax.annotation.Resource;
 
-    @Autowired
-    public SecurityConfig(ReaderService readerService) {
-        this.readerService = readerService;
-    }
+@EnableWebSecurity
+public class BookSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Resource
+    private ReaderService readerService;
+
+    //@Autowired
+//    public BookSecurityConfig(ReaderService readerService) {
+//        this.readerService = readerService;
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -29,14 +29,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors().disable().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("**/books/save").hasRole("ADMIN")
-                .antMatchers("**/books/delete*").hasRole("ADMIN")
-                .antMatchers("**/books").hasAnyRole("USER", "ADMIN")
-                .antMatchers("**/books/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("**/comments").hasAnyRole("USER", "ADMIN")
-                .antMatchers("**/login").permitAll()
+                .mvcMatchers("**/books/save").hasRole("ADMIN")
+                .mvcMatchers("**/books/delete*").hasRole("ADMIN")
+                .mvcMatchers("**/books").hasAnyRole("READER", "ADMIN")
+                .mvcMatchers("**/books/**").hasAnyRole("READER", "ADMIN")
+                .mvcMatchers("**/comments").hasAnyRole("READER", "ADMIN")
+                .mvcMatchers("**/login").permitAll()
                 .anyRequest().authenticated()
+                .and()
+                .httpBasic()
                 .and()
                 .formLogin()
                 .loginPage("/login")
