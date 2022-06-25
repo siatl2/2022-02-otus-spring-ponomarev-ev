@@ -10,7 +10,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot-starter.version>2.3.12.RELEASE</spring-boot-starter.version>
+        <spring-boot-starter.version>2.6.4</spring-boot-starter.version>
         <spring-security.version>5.5.5</spring-security.version>
         <spring-context.version>5.3.20</spring-context.version>
         <thymeleaf.extras>3.0.4.RELEASE</thymeleaf.extras>
