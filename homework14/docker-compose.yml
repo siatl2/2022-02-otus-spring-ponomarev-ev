@@ -1,0 +1,23 @@
+version: "3"
+services:
+  mongo-container:
+    image: "mongo:latest"
+    ports:
+      - 27017:27017
+    networks:
+      - nw
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.data.mongodb.host=mongo-container
+    depends_on:
+      - mongo-container
+    networks:
+      - nw
+networks:
+  nw:
