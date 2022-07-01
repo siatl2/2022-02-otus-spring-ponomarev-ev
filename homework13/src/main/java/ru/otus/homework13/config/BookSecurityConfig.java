@@ -39,8 +39,6 @@ public class BookSecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic()
-                .and()
                 .formLogin()
                 .loginPage("/login")
                 .usernameParameter("j_login")

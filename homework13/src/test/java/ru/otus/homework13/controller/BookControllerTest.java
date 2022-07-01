@@ -102,7 +102,8 @@ class BookControllerTest {
                         .with(csrf())
                         .param("book", String.valueOf(book))
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 
     @WithMockUser(roles = {"ADMIN"})
@@ -129,7 +130,8 @@ class BookControllerTest {
     void addBookWhenAnonimus() throws Exception {
         mvc.perform(get("/books/add")
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 
     @WithMockUser(roles = {"ADMIN"})
@@ -151,7 +153,8 @@ class BookControllerTest {
     void readAllBooksWhenAnonimous() throws Exception {
         mvc.perform(get("/books")
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 
     @WithMockUser(roles = {"ADMIN"})
@@ -184,6 +187,7 @@ class BookControllerTest {
         mvc.perform(get("/books/get")
                         .param("id", String.valueOf(SOME_ID))
                         .param("model", String.valueOf(new ConcurrentModel())))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 }
