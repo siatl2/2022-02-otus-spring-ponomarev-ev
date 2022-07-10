@@ -1,0 +1,18 @@
+spring:
+  main:
+    allow-circular-references: true
+  data:
+    mongodb:
+      database: books
+      host: localhost
+      port: 27017
+  mongodb:
+    embedded:
+      version: 3.6.3
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.homework11.mongock
+  mongo-db:
+    write-concern:
+      journal: false
