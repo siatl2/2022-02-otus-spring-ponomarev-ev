@@ -37,9 +37,9 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto addBook(@RequestBody BookDto bookDto) {
+    public Mono<BookDto> addBook(@RequestBody BookDto bookDto) {
         Book book = BookDto.toDomainObject(bookDto);
-        return BookDto.toDto(bookCrud.saveBook(book).block());
+        return bookCrud.saveBook(book).map(x -> BookDto.toDto(x));
     }
 
     @PutMapping
@@ -48,14 +48,15 @@ public class BookController {
         if (!bookCrud.existsById(book.getId())) {
             throw new NotFoundException();
         }
-        return Mono.just(BookDto.toDto(bookCrud.saveBook(book).block()));
+
+        return bookCrud.saveBook(book).map(x -> BookDto.toDto(x));
     }
 
     @DeleteMapping("{id}")
-    public void deleteBook(@PathVariable long id) {
+    public Flux<Void> deleteBook(@PathVariable long id) {
         if (!bookCrud.existsById(id)) {
             throw new NotFoundException();
         }
-        bookCrud.deleteBook(id);
+        return bookCrud.deleteBook(id);
     }
 }

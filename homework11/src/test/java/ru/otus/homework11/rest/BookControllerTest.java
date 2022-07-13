@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 @WebFluxTest(BookController.class)
 class BookControllerTest {
     @Autowired
-    WebTestClient webTestClient;
+    private WebTestClient webTestClient;
     @MockBean
     private BookCrud bookCrud;
     @Captor
@@ -145,7 +145,7 @@ class BookControllerTest {
     void deleteBook() throws Exception {
         long bookId = 10L;
         when(bookCrud.existsById(anyLong())).thenReturn(true);
-        doNothing().when(bookCrud).deleteBook(idCaptor.capture());
+        when(bookCrud.deleteBook(idCaptor.capture())).thenReturn(Flux.empty());
 
         webTestClient.delete()
                 .uri("/books/" + bookId)

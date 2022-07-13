@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @WebFluxTest(GenreController.class)
 class GenreControllerTest {
     @Autowired
-    WebTestClient webTestClient;
+    private WebTestClient webTestClient;
 
     @MockBean
     private GenreCrud genreCrud;

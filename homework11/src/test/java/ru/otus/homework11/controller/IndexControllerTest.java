@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(IndexController.class)
 class IndexControllerTest {
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @Test
     void getIndexPage() throws Exception {

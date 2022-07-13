@@ -4,8 +4,6 @@ spring:
   data:
     mongodb:
       database: books
-      host: localhost
-      port: 27017
   mongodb:
     embedded:
       version: 3.6.3

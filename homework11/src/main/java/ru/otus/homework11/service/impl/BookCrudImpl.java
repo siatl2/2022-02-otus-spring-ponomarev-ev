@@ -11,6 +11,7 @@ import ru.otus.homework11.model.Book;
 import ru.otus.homework11.model.Genre;
 import ru.otus.homework11.repository.AuthorRepository;
 import ru.otus.homework11.repository.BookRepository;
+import ru.otus.homework11.repository.CommentRepository;
 import ru.otus.homework11.repository.GenreRepository;
 import ru.otus.homework11.service.BookCrud;
 import ru.otus.homework11.service.SequenceGenerator;
@@ -21,16 +22,19 @@ public class BookCrudImpl implements BookCrud {
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
+    private final CommentRepository commentRepository;
     private final SequenceGenerator generator;
 
     @Autowired
     public BookCrudImpl(AuthorRepository authorRepository
             , BookRepository bookRepository
             , GenreRepository genreRepository
+            , CommentRepository commentRepository
             , SequenceGenerator generator) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
+        this.commentRepository = commentRepository;
         this.generator = generator;
     }
 
@@ -76,14 +80,14 @@ public class BookCrudImpl implements BookCrud {
                 author,
                 genre);
 
-        bookRepository.save(returnBook).subscribe();
-        return Mono.just(returnBook);
+        return bookRepository.save(returnBook);
     }
 
     @Transactional
     @Override
-    public void deleteBook(long id) {
-        bookRepository.deleteById(id);
+    public Flux<Void> deleteBook(long id) {
+        return bookRepository.deleteById(id).concatWith(
+                commentRepository.deleteAll(commentRepository.findAllByBookId(id)));
     }
 
     @Override

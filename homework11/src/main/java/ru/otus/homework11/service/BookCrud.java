@@ -11,7 +11,7 @@ public interface BookCrud {
 
     Mono<Book> retrieveBook(long id);
 
-    void deleteBook(long id);
+    Flux<Void> deleteBook(long id);
 
     Mono<Book> saveBook(Book book);
 

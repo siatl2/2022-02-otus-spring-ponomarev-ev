@@ -20,7 +20,7 @@ class AuthorControllerTest {
     private AuthorCrud authorCrud;
 
     @Autowired
-    WebTestClient webTestClient;
+    private WebTestClient webTestClient;
 
     @Test
     void readAllAuthors() throws Exception {

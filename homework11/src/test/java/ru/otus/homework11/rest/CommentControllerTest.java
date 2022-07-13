@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @WebFluxTest(CommentController.class)
 class CommentControllerTest {
     @Autowired
-    WebTestClient webTestClient;
+    private WebTestClient webTestClient;
     @MockBean
     private CommentCrud commentCrud;
 

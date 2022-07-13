@@ -14,6 +14,7 @@ import ru.otus.homework11.model.Book;
 import ru.otus.homework11.model.Genre;
 import ru.otus.homework11.repository.AuthorRepository;
 import ru.otus.homework11.repository.BookRepository;
+import ru.otus.homework11.repository.CommentRepository;
 import ru.otus.homework11.repository.GenreRepository;
 import ru.otus.homework11.service.BookCrud;
 import ru.otus.homework11.service.SequenceGenerator;
@@ -34,6 +35,8 @@ class BookCrudImplTest {
     private BookRepository bookRepository;
     @MockBean
     private GenreRepository genreRepository;
+    @MockBean
+    private CommentRepository commentRepository;
     @MockBean
     private SequenceGenerator sequenceGenerator;
     @Captor
