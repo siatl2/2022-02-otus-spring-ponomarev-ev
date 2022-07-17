@@ -45,12 +45,12 @@ public class DatabaseChangelog {
 
     @ChangeSet(order = "003", id = "insertAuthors", author = "siatl2")
     public void insertAuthors(@NonLockGuarded(NonLockGuardedType.NONE) AuthorCrud crud) {
-        crud.createAuthor("JACK LONDON");
+        crud.createAuthor("JACK LONDON").block();
     }
 
     @ChangeSet(order = "004", id = "insertGenres", author = "siatl2")
     public void insertGenres(@NonLockGuarded(NonLockGuardedType.NONE) GenreCrud crud) {
-        crud.createGenre("Adventure literature");
+        crud.createGenre("Adventure literature").block();
     }
 
     @ChangeSet(order = "005", id = "insertBooks", author = "siatl2")
@@ -60,8 +60,8 @@ public class DatabaseChangelog {
         long authorId = authorCrud.findByName("JACK LONDON").blockFirst().getId();
         long genreId = genreCrud.findByName("Adventure literature").blockFirst().getId();
 
-        bookCrud.createBook("Martin Eden", authorId, genreId);
-        bookCrud.createBook("The Little Lady", authorId, genreId);
+        bookCrud.createBook("Martin Eden", authorId, genreId).block();
+        bookCrud.createBook("The Little Lady", authorId, genreId).block();
     }
 
     @ChangeSet(order = "006", id = "insertComments", author = "siatl2")
@@ -69,9 +69,9 @@ public class DatabaseChangelog {
                                @NonLockGuarded(NonLockGuardedType.NONE) CommentCrud commentCrud) {
         long bookId = bookCrud.findByName("Martin Eden").blockFirst().getId();
 
-        commentCrud.createComment(bookId, "COMMENT-1");
-        commentCrud.createComment(bookId, "COMMENT-2");
-        commentCrud.createComment(bookId, "COMMENT-3");
-        commentCrud.createComment(bookId, "COMMENT-4");
+        commentCrud.createComment(bookId, "COMMENT-1").block();
+        commentCrud.createComment(bookId, "COMMENT-2").block();
+        commentCrud.createComment(bookId, "COMMENT-3").block();
+        commentCrud.createComment(bookId, "COMMENT-4").block();
     }
 }

@@ -18,7 +18,6 @@ import ru.otus.homework11.rest.dto.BookDto;
 import ru.otus.homework11.service.BookCrud;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,7 +58,7 @@ class BookControllerTest {
     void retrieveBook() throws Exception {
         Book book = getTestedBook();
 
-        when(bookCrud.retrieveBook(idCaptor.capture())).thenReturn(Mono.justOrEmpty(Optional.of(book)));
+        when(bookCrud.retrieveBook(idCaptor.capture())).thenReturn(Mono.justOrEmpty(book));
 
         webTestClient.get()
                 .uri("/books/" + book.getId())
@@ -75,7 +74,7 @@ class BookControllerTest {
 
     @Test
     void retrieveBookExceptionNotFound() throws Exception {
-        when(bookCrud.retrieveBook(anyLong())).thenReturn(Mono.justOrEmpty(Optional.empty()));
+        when(bookCrud.retrieveBook(anyLong())).thenReturn(Mono.justOrEmpty(null));
 
         webTestClient.get()
                 .uri("/books/1")
@@ -109,7 +108,6 @@ class BookControllerTest {
     void updateBook() throws Exception {
         Book book = getTestedBook();
 
-        when(bookCrud.existsById(anyLong())).thenReturn(true);
         when(bookCrud.saveBook(bookCaptor.capture())).thenReturn(Mono.just(book));
 
         webTestClient.put()
@@ -130,7 +128,7 @@ class BookControllerTest {
     void updateBookExceptionNotFound() throws Exception {
         Book book = getTestedBook();
 
-        when(bookCrud.existsById(anyLong())).thenReturn(false);
+        when(bookCrud.saveBook(any())).thenReturn(Mono.justOrEmpty(null));
 
         webTestClient.put()
                 .uri("/books")
@@ -143,26 +141,27 @@ class BookControllerTest {
 
     @Test
     void deleteBook() throws Exception {
-        long bookId = 10L;
-        when(bookCrud.existsById(anyLong())).thenReturn(true);
-        when(bookCrud.deleteBook(idCaptor.capture())).thenReturn(Flux.empty());
+        Book book = getTestedBook();
+
+        when(bookCrud.retrieveBook(idCaptor.capture())).thenReturn(Mono.justOrEmpty(book));
+        when(bookCrud.deleteBook(anyLong())).thenReturn(Flux.empty());
 
         webTestClient.delete()
-                .uri("/books/" + bookId)
+                .uri("/books/" + book.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
 
         assertAll(
                 () -> verify(bookCrud, times(1)).deleteBook(anyLong()),
-                () -> assertEquals(bookId, idCaptor.getValue())
+                () -> assertEquals(book.getId(), idCaptor.getValue())
         );
     }
 
     @Test
     void deleteBookExceptionNotFound() throws Exception {
         long bookId = 10L;
-        when(bookCrud.existsById(anyLong())).thenReturn(false);
+        when(bookCrud.retrieveBook(anyLong())).thenReturn(Mono.empty());
 
         webTestClient.delete()
                 .uri("/books/" + bookId)

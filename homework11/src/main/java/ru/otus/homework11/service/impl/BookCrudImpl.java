@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.otus.homework11.exception.NotFoundException;
-import ru.otus.homework11.model.Author;
 import ru.otus.homework11.model.Book;
-import ru.otus.homework11.model.Genre;
 import ru.otus.homework11.repository.AuthorRepository;
 import ru.otus.homework11.repository.BookRepository;
 import ru.otus.homework11.repository.CommentRepository;
@@ -39,18 +36,20 @@ public class BookCrudImpl implements BookCrud {
     }
 
     @Override
-    public void createBook(String name, long authorId, long genreId) {
-        Author author = authorRepository.findById(authorId).block();
-        if (author == null) {
-            throw new NotFoundException("Author id not exist");
-        }
-        Genre genre = genreRepository.findById(genreId).block();
-        if (genre == null) {
-            throw new NotFoundException("Genre id not exist");
-        }
-        long id = generator.getSequenceNumber(SEQ_BOOK);
-        Book book = new Book(id, name, author, genre);
-        bookRepository.save(book).subscribe();
+    public Mono<Book> createBook(String name, long authorId, long genreId) {
+        return Mono.just(new Book())
+                .zipWith(generator.getNextCounter(SEQ_BOOK), (book, counter) -> {
+                    book.setId(counter.getSequenceNumber());
+                    book.setName(name);
+                    return book;
+                }).zipWith(authorRepository.findById(authorId), (book, author) -> {
+                    book.setAuthor(author);
+                    return book;
+                }).zipWith(genreRepository.findById(genreId), (book, genre) -> {
+                    book.setGenre(genre);
+                    return book;
+                })
+                .flatMap(bookRepository::save);
     }
 
     @Override
@@ -66,21 +65,14 @@ public class BookCrudImpl implements BookCrud {
     @Transactional
     @Override
     public Mono<Book> saveBook(Book book) {
-        long authorId = book.getAuthor().getId();
-        long genreId = book.getGenre().getId();
-
-        if ((!authorRepository.existsById(authorId).block()) ||
-                (!genreRepository.existsById(genreId).block())) {
-            throw new NotFoundException();
-        }
-        Author author = authorRepository.findById(authorId).block();
-        Genre genre = genreRepository.findById(genreId).block();
-        Book returnBook = new Book(book.getId() > 0 ? book.getId() : generator.getSequenceNumber(SEQ_BOOK),
-                book.getName(),
-                author,
-                genre);
-
-        return bookRepository.save(returnBook);
+        return Mono.just(book)
+                .zipWith(generator.getNextCounter(SEQ_BOOK), (bookProcess, counter) -> {
+                    if (book.getId() == 0) {
+                        book.setId(counter.getSequenceNumber());
+                    }
+                    return book;
+                })
+                .flatMap(bookRepository::save);
     }
 
     @Transactional
@@ -88,11 +80,6 @@ public class BookCrudImpl implements BookCrud {
     public Flux<Void> deleteBook(long id) {
         return bookRepository.deleteById(id).concatWith(
                 commentRepository.deleteAll(commentRepository.findAllByBookId(id)));
-    }
-
-    @Override
-    public boolean existsById(long id) {
-        return bookRepository.existsById(id).block();
     }
 
     @Override

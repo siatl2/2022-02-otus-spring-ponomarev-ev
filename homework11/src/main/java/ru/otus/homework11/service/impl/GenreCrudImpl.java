@@ -3,6 +3,7 @@ package ru.otus.homework11.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework11.model.Genre;
 import ru.otus.homework11.repository.GenreRepository;
 import ru.otus.homework11.service.GenreCrud;
@@ -22,10 +23,14 @@ public class GenreCrudImpl implements GenreCrud {
     }
 
     @Override
-    public void createGenre(String name) {
-        long id = generator.getSequenceNumber(SEQ_GENRE);
-        Genre genre = new Genre(id, name);
-        genreRepository.save(genre).subscribe();
+    public Mono<Genre> createGenre(String name) {
+        return Mono.just(new Genre())
+                .zipWith(generator.getNextCounter(SEQ_GENRE), (genre, counter) -> {
+                    genre.setId(counter.getSequenceNumber());
+                    genre.setName(name);
+                    return genre;
+                })
+                .flatMap(genreRepository::save);
     }
 
     @Override

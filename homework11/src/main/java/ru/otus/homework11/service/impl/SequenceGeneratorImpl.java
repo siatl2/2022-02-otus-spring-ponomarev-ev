@@ -23,12 +23,11 @@ public class SequenceGeneratorImpl implements SequenceGenerator {
     }
 
     @Override
-    public long getSequenceNumber(String sequenceName) {
+    public Mono<Counter> getNextCounter(String sequenceName) {
         Query query = new Query(Criteria.where("_id").is(sequenceName));
         Update update = new Update().inc("sequenceNumber", INC);
-        Mono<Counter> counter = mongoOperations.findAndModify(query,
+        return mongoOperations.findAndModify(query,
                 update,
                 Counter.class);
-        return counter.block().getSequenceNumber();
     }
 }

@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 import ru.otus.homework11.model.Book;
 
 public interface BookCrud {
-    void createBook(String name, long authorId, long genreId);
+    Mono<Book> createBook(String name, long authorId, long genreId);
 
     Flux<Book> readAllBooks();
 
@@ -14,8 +14,6 @@ public interface BookCrud {
     Flux<Void> deleteBook(long id);
 
     Mono<Book> saveBook(Book book);
-
-    boolean existsById(long id);
 
     Flux<Book> findByName(String name);
 }

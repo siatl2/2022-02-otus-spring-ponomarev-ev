@@ -1,10 +1,11 @@
 package ru.otus.homework11.service;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework11.model.Author;
 
 public interface AuthorCrud {
-    void createAuthor(String name);
+    Mono<Author> createAuthor(String name);
 
     Flux<Author> readAllAuthors();
 

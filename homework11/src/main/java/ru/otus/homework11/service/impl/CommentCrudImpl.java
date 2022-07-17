@@ -3,8 +3,7 @@ package ru.otus.homework11.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import ru.otus.homework11.exception.NotFoundException;
-import ru.otus.homework11.model.Book;
+import reactor.core.publisher.Mono;
 import ru.otus.homework11.model.Comment;
 import ru.otus.homework11.repository.BookRepository;
 import ru.otus.homework11.repository.CommentRepository;
@@ -29,14 +28,17 @@ public class CommentCrudImpl implements CommentCrud {
     }
 
     @Override
-    public void createComment(long bookId, String name) {
-        Book book = bookRepository.findById(bookId).block();
-        if (book == null) {
-            throw new NotFoundException("Don't exist book");
-        }
-        long id = generator.getSequenceNumber(SEQ_COMMENT);
-        Comment comment = new Comment(id, name, book);
-        commentRepository.save(comment).subscribe();
+    public Mono<Comment> createComment(long bookId, String name) {
+        return Mono.just(new Comment())
+                .zipWith(generator.getNextCounter(SEQ_COMMENT), (comment, counter) -> {
+                    comment.setId(counter.getSequenceNumber());
+                    comment.setName(name);
+                    return comment;
+                }).zipWith(bookRepository.findById(bookId), (comment, book) -> {
+                    comment.setBook(book);
+                    return comment;
+                })
+                .flatMap(commentRepository::save);
     }
 
     @Override

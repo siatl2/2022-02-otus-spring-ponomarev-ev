@@ -1,5 +1,8 @@
 package ru.otus.homework11.service;
 
+import reactor.core.publisher.Mono;
+import ru.otus.homework11.model.Counter;
+
 public interface SequenceGenerator {
-    long getSequenceNumber(String sequenceName);
+    public Mono<Counter> getNextCounter(String sequenceName);
 }
