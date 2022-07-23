@@ -1,0 +1,13 @@
+spring:
+  main:
+    allow-circular-references: true
+  data:
+    mongodb:
+      database: books
+      host: localhost
+      port: 27017
+  mongodb:
+    embedded:
+      version: 3.6.3
+mongock:
+  enabled: false

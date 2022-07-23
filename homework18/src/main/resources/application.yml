@@ -1,0 +1,24 @@
+spring:
+  main:
+    allow-circular-references: true
+  data:
+    mongodb:
+      database: books
+  mongodb:
+    embedded:
+      version: 3.6.3
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.homework18.mongock
+  mongo-db:
+    write-concern:
+      journal: false
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 3000
+
