@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:library
+    driver-class-name: org.h2.Driver
+    initialization-mode: always
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+      schema-locations: classpath:schema.sql
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      use-new-id-generator-mappings: false
+logging:
+  file:
+    name: homework16.log
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health,logfile"
+  endpoint:
+    health:
+      show-details: always
+books:
+  maximum: 3
