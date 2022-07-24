@@ -1,6 +1,5 @@
 package ru.otus.homework18.rest;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +21,8 @@ public class AuthorController {
     }
 
     @GetMapping
-    @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorReadAllAuthors")
     public Flux<AuthorDto> readAllAuthors() {
         return authorCrud.readAllAuthors()
                 .map(AuthorDto::toDto);
     }
-
-    public Flux<AuthorDto> errorReadAllAuthors() {
-        return Flux.just(
-                new AuthorDto(ID_WHEN_UNAVAILABLE, MESSAGE_WHEN_UNAVAILABLE)
-        );
-    }
-
 }
