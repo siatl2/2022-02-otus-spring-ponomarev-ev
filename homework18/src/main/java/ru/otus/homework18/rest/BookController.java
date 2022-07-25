@@ -1,14 +1,14 @@
 package ru.otus.homework18.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import ru.otus.homework18.exception.NotFoundException;
 import ru.otus.homework18.model.Book;
 import ru.otus.homework18.rest.dto.BookDto;
 import ru.otus.homework18.service.BookCrud;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("books")
@@ -21,44 +21,37 @@ public class BookController {
     }
 
     @GetMapping
-    public Flux<BookDto> readAllBooks() {
-        return bookCrud.readAllBooks()
-                .map(BookDto::toDto);
+    public List<BookDto> readAllBooks() {
+        return bookCrud.readAllBooks().stream()
+                .map(BookDto::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("{id}")
-    public Mono<ResponseEntity<BookDto>> retrieveBook(@PathVariable long id) {
-        return bookCrud
-                .retrieveBook(id)
-                .map(BookDto::toDto)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public BookDto retrieveBook(@PathVariable long id) {
+        return BookDto.toDto(bookCrud.retrieveBook(id).orElseThrow(NotFoundException::new));
     }
 
     @PostMapping
-    public Mono<BookDto> addBook(@RequestBody BookDto bookDto) {
+    public BookDto addBook(@RequestBody BookDto bookDto) {
         Book book = BookDto.toDomainObject(bookDto);
-        return bookCrud.saveBook(book).map(BookDto::toDto);
+        return BookDto.toDto(bookCrud.saveBook(book));
     }
 
     @PutMapping
-    public Mono<ResponseEntity<BookDto>> updateBook(@RequestBody BookDto bookDto) {
+    public BookDto updateBook(@RequestBody BookDto bookDto) {
         Book book = BookDto.toDomainObject(bookDto);
-
-        return bookCrud
-                .saveBook(book)
-                .map(BookDto::toDto)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+        if (!bookCrud.existsById(book.getId())) {
+            throw new NotFoundException();
+        }
+        return BookDto.toDto(bookCrud.saveBook(book));
     }
 
     @DeleteMapping("{id}")
-    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable long id) {
-        return bookCrud.retrieveBook(id)
-                .flatMap(s ->
-                        bookCrud.deleteBook(id)
-                                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
-                )
-                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public void deleteBook(@PathVariable long id) {
+        if (!bookCrud.existsById(id)) {
+            throw new NotFoundException();
+        }
+        bookCrud.deleteBook(id);
     }
 }

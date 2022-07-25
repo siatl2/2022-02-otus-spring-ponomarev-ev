@@ -1,15 +1,13 @@
 package ru.otus.homework18.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework18.model.Author;
 import ru.otus.homework18.model.Book;
 import ru.otus.homework18.model.Comment;
@@ -22,12 +20,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ComponentScan(basePackageClasses = {ru.otus.homework18.config.Config.class})
-@WebFluxTest(CommentController.class)
+@WebMvcTest(CommentController.class)
 class CommentControllerTest {
     @Autowired
-    private WebTestClient webTestClient;
+    MockMvc mvc;
+    @Autowired
+    private ObjectMapper mapper;
     @MockBean
     private CommentCrud commentCrud;
 
@@ -50,7 +52,7 @@ class CommentControllerTest {
                 genre
         );
 
-        Flux<Comment> comments = Flux.just(
+        List<Comment> comments = List.of(
                 new Comment(1L, "Comment-1", book),
                 new Comment(2L, "Comment-2", book)
         );
@@ -60,14 +62,14 @@ class CommentControllerTest {
                 CommentDto.toDto(new Comment(2L, "Comment-2", book))
         );
 
+        String expectedContent = mapper.writeValueAsString(commentsDto);
+
         when(commentCrud.readAllCommentsByBookId(idCaptor.capture())).thenReturn(comments);
 
-        webTestClient.get()
-                .uri("/comments/" + bookId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
-
+        mvc.perform(get("/comments/" + bookId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(expectedContent));
 
         assertAll(
                 () -> verify(commentCrud, times(1)).readAllCommentsByBookId(anyLong()),

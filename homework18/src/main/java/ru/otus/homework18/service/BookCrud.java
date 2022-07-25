@@ -1,20 +1,19 @@
 package ru.otus.homework18.service;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.otus.homework18.model.Book;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface BookCrud {
-    Mono<Book> createBook(String name, long authorId, long genreId);
+    List<Book> readAllBooks();
 
-    Flux<Book> readAllBooks();
+    Optional<Book> retrieveBook(long id);
 
-    Mono<Book> retrieveBook(long id);
+    void deleteBook(long id);
 
-    Flux<Void> deleteBook(long id);
+    Book saveBook(Book book);
 
-    Mono<Book> saveBook(Book book);
-
-    Flux<Book> findByName(String name);
+    boolean existsById(long id);
 }
 

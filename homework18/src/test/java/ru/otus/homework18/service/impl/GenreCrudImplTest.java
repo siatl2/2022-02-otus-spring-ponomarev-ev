@@ -4,11 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import reactor.core.publisher.Flux;
 import ru.otus.homework18.model.Genre;
 import ru.otus.homework18.repository.GenreRepository;
 import ru.otus.homework18.service.GenreCrud;
-import ru.otus.homework18.service.SequenceGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -18,13 +19,11 @@ class GenreCrudImplTest {
     private GenreCrud genreCrud;
     @MockBean
     private GenreRepository genreRepository;
-    @MockBean
-    private SequenceGenerator sequenceGenerator;
 
     @Test
     void readAllGenres() {
-        Genre genre = new Genre();
-        when(genreRepository.findAll()).thenReturn(Flux.just(genre));
+        List<Genre> genres = new ArrayList<>();
+        when(genreRepository.findAll()).thenReturn(genres);
 
         genreCrud.readAllGenres();
 

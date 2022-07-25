@@ -1,12 +1,11 @@
 package ru.otus.homework18.repository;
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
-import reactor.core.publisher.Flux;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.homework18.model.Genre;
 
-public interface GenreRepository extends ReactiveMongoRepository<Genre, Long> {
-    Flux<Genre> findAll();
+import java.util.List;
 
-    Flux<Genre> findByName(String name);
+public interface GenreRepository extends JpaRepository<Genre, Long> {
+    List<Genre> findAll();
 }
 

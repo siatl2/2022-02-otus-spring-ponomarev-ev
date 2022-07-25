@@ -6,12 +6,12 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import reactor.core.publisher.Flux;
 import ru.otus.homework18.model.Comment;
-import ru.otus.homework18.repository.BookRepository;
 import ru.otus.homework18.repository.CommentRepository;
 import ru.otus.homework18.service.CommentCrud;
-import ru.otus.homework18.service.SequenceGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,17 +24,13 @@ class CommentCrudImplTest {
     private CommentCrud commentCrud;
     @MockBean
     private CommentRepository commentRepository;
-    @MockBean
-    private BookRepository bookRepository;
-    @MockBean
-    private SequenceGenerator sequenceGenerator;
     @Captor
     private ArgumentCaptor<Long> idCaptor;
 
     @Test
     void readAllCommentsByBookId() {
-        Comment comment = new Comment();
-        when(commentRepository.findAllByBookId(idCaptor.capture())).thenReturn(Flux.just(comment));
+        List<Comment> comments = new ArrayList<>();
+        when(commentRepository.findAllByBookId(idCaptor.capture())).thenReturn(comments);
 
         commentCrud.readAllCommentsByBookId(SOME_ID);
 

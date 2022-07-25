@@ -3,22 +3,24 @@ package ru.otus.homework18.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "comment")
+@Entity
+@Table(name = "COMMENT")
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Comment_sec")
+    @SequenceGenerator(name = "Comment_sec", sequenceName = "SEC_COMMENT")
     private long id;
 
     private String name;
 
-    @DBRef
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BOOK_ID")
     private Book book;
 
     @Override

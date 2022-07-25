@@ -375,11 +375,7 @@ methods:{
     fillComment(bookId){
     axios
       .get('/comments/' + bookId)
-      .then(response => (
-            (response.data.id == -1) ?
-            window.location.href = 'unavailable.html':
-            this.comments = response
-        ));
+      .then(response => (this.comments = response));
     }
 }
 });

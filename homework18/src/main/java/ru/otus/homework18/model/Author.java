@@ -3,15 +3,18 @@ package ru.otus.homework18.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "author")
+@Entity
+@Table(name = "Author")
 public class Author {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Author_sec")
+    @SequenceGenerator(name = "Author_sec", sequenceName = "SEC_AUTHOR")
     private long id;
 
     private String name;

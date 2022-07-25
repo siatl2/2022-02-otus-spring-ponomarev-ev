@@ -1,16 +1,13 @@
 package ru.otus.homework18.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework18.model.Author;
 import ru.otus.homework18.model.Book;
 import ru.otus.homework18.model.Genre;
@@ -18,18 +15,23 @@ import ru.otus.homework18.rest.dto.BookDto;
 import ru.otus.homework18.service.BookCrud;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ComponentScan(basePackageClasses = {ru.otus.homework18.config.Config.class})
-@WebFluxTest(BookController.class)
+@WebMvcTest(BookController.class)
 class BookControllerTest {
     @Autowired
-    private WebTestClient webTestClient;
+    MockMvc mvc;
+    @Autowired
+    private ObjectMapper mapper;
     @MockBean
     private BookCrud bookCrud;
     @Captor
@@ -40,16 +42,16 @@ class BookControllerTest {
     @Test
     void readAllBooks() throws Exception {
         Book book = getTestedBook();
-        Flux<Book> books = Flux.just(book);
+        List<Book> books = List.of(book);
         List<BookDto> booksDto = List.of(BookDto.toDto(book));
+        String expectedContent = mapper.writeValueAsString(booksDto);
 
         when(bookCrud.readAllBooks()).thenReturn(books);
 
-        webTestClient.get()
-                .uri("/books")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        mvc.perform(get("/books"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(expectedContent));
 
         verify(bookCrud, times(1)).readAllBooks();
     }
@@ -57,14 +59,14 @@ class BookControllerTest {
     @Test
     void retrieveBook() throws Exception {
         Book book = getTestedBook();
+        String expectedContent = mapper.writeValueAsString(BookDto.toDto(book));
 
-        when(bookCrud.retrieveBook(idCaptor.capture())).thenReturn(Mono.justOrEmpty(book));
+        when(bookCrud.retrieveBook(idCaptor.capture())).thenReturn(Optional.of(book));
 
-        webTestClient.get()
-                .uri("/books/" + book.getId())
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        mvc.perform(get("/books/" + book.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(expectedContent));
 
         assertAll(
                 () -> verify(bookCrud, times(1)).retrieveBook(anyLong()),
@@ -74,29 +76,26 @@ class BookControllerTest {
 
     @Test
     void retrieveBookExceptionNotFound() throws Exception {
-        when(bookCrud.retrieveBook(anyLong())).thenReturn(Mono.justOrEmpty(null));
+        when(bookCrud.retrieveBook(anyLong())).thenReturn(Optional.empty());
 
-        webTestClient.get()
-                .uri("/books/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isNotFound();
+        mvc.perform(get("/books/1"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void addBook() throws Exception {
         Book book = getTestedBook();
         book.setId(0L);
+        String expectedContent = mapper.writeValueAsString(BookDto.toDto(book));
 
-        when(bookCrud.saveBook(bookCaptor.capture())).thenReturn(Mono.just(book));
+        when(bookCrud.saveBook(bookCaptor.capture())).thenReturn(book);
 
-        webTestClient.post()
-                .uri("/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(book), Book.class)
-                .exchange()
-                .expectStatus().isOk();
+        mvc.perform(post("/books")
+                        .contentType("application/json")
+                        .content(expectedContent))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(expectedContent));
 
         assertAll(
                 () -> verify(bookCrud, times(1)).saveBook(any())
@@ -107,16 +106,17 @@ class BookControllerTest {
     @Test
     void updateBook() throws Exception {
         Book book = getTestedBook();
+        String expectedContent = mapper.writeValueAsString(BookDto.toDto(book));
 
-        when(bookCrud.saveBook(bookCaptor.capture())).thenReturn(Mono.just(book));
+        when(bookCrud.existsById(anyLong())).thenReturn(true);
+        when(bookCrud.saveBook(bookCaptor.capture())).thenReturn(book);
 
-        webTestClient.put()
-                .uri("/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(book), Book.class)
-                .exchange()
-                .expectStatus().isOk();
+        mvc.perform(put("/books")
+                        .contentType("application/json")
+                        .content(expectedContent))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(expectedContent));
 
         assertAll(
                 () -> verify(bookCrud, times(1)).saveBook(any())
@@ -127,47 +127,38 @@ class BookControllerTest {
     @Test
     void updateBookExceptionNotFound() throws Exception {
         Book book = getTestedBook();
+        String expectedContent = mapper.writeValueAsString(BookDto.toDto(book));
 
-        when(bookCrud.saveBook(any())).thenReturn(Mono.justOrEmpty(null));
+        when(bookCrud.existsById(anyLong())).thenReturn(false);
 
-        webTestClient.put()
-                .uri("/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(book), Book.class)
-                .exchange()
-                .expectStatus().isNotFound();
+        mvc.perform(put("/books/")
+                        .contentType("application/json")
+                        .content(expectedContent))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void deleteBook() throws Exception {
-        Book book = getTestedBook();
+        long bookId = 10L;
+        when(bookCrud.existsById(anyLong())).thenReturn(true);
+        doNothing().when(bookCrud).deleteBook(idCaptor.capture());
 
-        when(bookCrud.retrieveBook(idCaptor.capture())).thenReturn(Mono.justOrEmpty(book));
-        when(bookCrud.deleteBook(anyLong())).thenReturn(Flux.empty());
-
-        webTestClient.delete()
-                .uri("/books/" + book.getId())
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        mvc.perform(delete("/books/" + bookId))
+                .andExpect(status().isOk());
 
         assertAll(
                 () -> verify(bookCrud, times(1)).deleteBook(anyLong()),
-                () -> assertEquals(book.getId(), idCaptor.getValue())
+                () -> assertEquals(bookId, idCaptor.getValue())
         );
     }
 
     @Test
     void deleteBookExceptionNotFound() throws Exception {
         long bookId = 10L;
-        when(bookCrud.retrieveBook(anyLong())).thenReturn(Mono.empty());
+        when(bookCrud.existsById(anyLong())).thenReturn(false);
 
-        webTestClient.delete()
-                .uri("/books/" + bookId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isNotFound();
+        mvc.perform(delete("/books/" + bookId))
+                .andExpect(status().isNotFound());
     }
 
     private Book getTestedBook() {

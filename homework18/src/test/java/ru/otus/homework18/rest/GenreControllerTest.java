@@ -1,13 +1,11 @@
 package ru.otus.homework18.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework18.model.Genre;
 import ru.otus.homework18.rest.dto.GenreDto;
 import ru.otus.homework18.service.GenreCrud;
@@ -15,19 +13,22 @@ import ru.otus.homework18.service.GenreCrud;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ComponentScan(basePackageClasses = {ru.otus.homework18.config.Config.class})
-@WebFluxTest(GenreController.class)
+@WebMvcTest(GenreController.class)
 class GenreControllerTest {
     @Autowired
-    private WebTestClient webTestClient;
-
+    MockMvc mvc;
+    @Autowired
+    private ObjectMapper mapper;
     @MockBean
     private GenreCrud genreCrud;
 
     @Test
     void readAllGenres() throws Exception {
-        Flux<Genre> genres = Flux.just(
+        List<Genre> genres = List.of(
                 new Genre(1L, "Genre-1"),
                 new Genre(2L, "Genre-2")
         );
@@ -37,13 +38,14 @@ class GenreControllerTest {
                 GenreDto.toDto(new Genre(2L, "Genre-2"))
         );
 
+        String expectedContent = mapper.writeValueAsString(genresDto);
+
         when(genreCrud.readAllGenres()).thenReturn(genres);
 
-        webTestClient.get()
-                .uri("/genres")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        mvc.perform(get("/genres"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(expectedContent));
 
         verify(genreCrud, times(1)).readAllGenres();
     }

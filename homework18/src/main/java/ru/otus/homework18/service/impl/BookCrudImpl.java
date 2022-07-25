@@ -3,120 +3,94 @@ package ru.otus.homework18.service.impl;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import ru.otus.homework18.exception.NotFoundException;
 import ru.otus.homework18.exception.UnavailableException;
+import ru.otus.homework18.model.Author;
 import ru.otus.homework18.model.Book;
+import ru.otus.homework18.model.Genre;
 import ru.otus.homework18.repository.AuthorRepository;
 import ru.otus.homework18.repository.BookRepository;
-import ru.otus.homework18.repository.CommentRepository;
 import ru.otus.homework18.repository.GenreRepository;
 import ru.otus.homework18.service.BookCrud;
-import ru.otus.homework18.service.SequenceGenerator;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookCrudImpl implements BookCrud {
-    private static final String SEQ_BOOK = "SEQ_BOOK";
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
-    private final CommentRepository commentRepository;
-    private final SequenceGenerator generator;
 
     @Autowired
-    public BookCrudImpl(AuthorRepository authorRepository
-            , BookRepository bookRepository
-            , GenreRepository genreRepository
-            , CommentRepository commentRepository
-            , SequenceGenerator generator) {
+    public BookCrudImpl(AuthorRepository authorRepository, BookRepository bookRepository, GenreRepository genreRepository) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
-        this.commentRepository = commentRepository;
-        this.generator = generator;
-    }
-
-    @Override
-    @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorCreateBook")
-    public Mono<Book> createBook(String name, long authorId, long genreId) {
-        return Mono.just(new Book())
-                .zipWith(generator.getNextCounter(SEQ_BOOK), (book, counter) -> {
-                    book.setId(counter.getSequenceNumber());
-                    book.setName(name);
-                    return book;
-                }).zipWith(authorRepository.findById(authorId), (book, author) -> {
-                    book.setAuthor(author);
-                    return book;
-                }).zipWith(genreRepository.findById(genreId), (book, genre) -> {
-                    book.setGenre(genre);
-                    return book;
-                })
-                .flatMap(bookRepository::save);
-    }
-
-    public Mono<Book> errorCreateBook(String name, long authorId, long genreId) {
-        return Mono.error(new UnavailableException());
     }
 
     @Override
     @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorReadAllBooks")
-    public Flux<Book> readAllBooks() {
+    public List<Book> readAllBooks() {
         return bookRepository.findAll();
     }
 
-    public Flux<Book> errorReadAllBooks() {
-        return Flux.error(new UnavailableException());
+    public List<Book> errorReadAllBooks() {
+        throw new UnavailableException();
     }
 
     @Override
     @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorRetrieveBook")
-    public Mono<Book> retrieveBook(long id) {
+    public Optional<Book> retrieveBook(long id) {
         return bookRepository.findById(id);
     }
 
-    public Mono<Book> errorRetrieveBook(long id) {
-        return Mono.error(new UnavailableException());
+    public Optional<Book> errorRetrieveBook(long id) {
+        throw new UnavailableException();
     }
 
     @Transactional
     @Override
     @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorSaveBook")
-    public Mono<Book> saveBook(Book book) {
-        return Mono.just(book)
-                .zipWith(generator.getNextCounter(SEQ_BOOK), (bookProcess, counter) -> {
-                    if (book.getId() == 0) {
-                        book.setId(counter.getSequenceNumber());
-                    }
-                    return book;
-                })
-                .flatMap(bookRepository::save);
+    public Book saveBook(Book book) {
+        long authorId = book.getAuthor().getId();
+        long genreId = book.getGenre().getId();
+
+        if ((!authorRepository.existsById(authorId)) ||
+                (!genreRepository.existsById(genreId))) {
+            throw new NotFoundException();
+        }
+        Author author = authorRepository.findById(authorId).get();
+        Genre genre = genreRepository.findById(genreId).get();
+        Book returnBook = new Book(book.getId(), book.getName(), author, genre);
+
+        return bookRepository.save(returnBook);
     }
 
-    public Mono<Book> errorSaveBook(Book book) {
-        return Mono.error(new UnavailableException());
+    public Book errorSaveBook(Book book) {
+        throw new UnavailableException();
     }
 
     @Transactional
     @Override
     @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorDeleteBook")
-    public Flux<Void> deleteBook(long id) {
-        return bookRepository.deleteById(id).concatWith(
-                commentRepository.deleteAll(commentRepository.findAllByBookId(id)));
+    public void deleteBook(long id) {
+        bookRepository.deleteById(id);
     }
 
-    public Flux<Void> errorDeleteBook(long id) {
-        return Flux.error(new UnavailableException());
+    public void errorDeleteBook(long id) {
+        throw new UnavailableException();
     }
 
     @Override
-    @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorFindByName")
-    public Flux<Book> findByName(String name) {
-        return bookRepository.findByName(name);
+    @HystrixCommand(commandKey = "getInfo", fallbackMethod = "errorExistsById")
+    public boolean existsById(long id) {
+        return bookRepository.existsById(id);
     }
 
-    public Flux<Book> errorFindByName(String name) {
-        return Flux.error(new UnavailableException());
+    public boolean errorExistsById(long id) {
+        throw new UnavailableException();
     }
 }
 

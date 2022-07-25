@@ -1,12 +1,10 @@
 package ru.otus.homework18.service;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.otus.homework18.model.Comment;
 
-public interface CommentCrud {
-    Mono<Comment> createComment(long bookId, String name);
+import java.util.List;
 
-    Flux<Comment> readAllCommentsByBookId(long bookId);
+public interface CommentCrud {
+    List<Comment> readAllCommentsByBookId(long bookId);
 }
 
